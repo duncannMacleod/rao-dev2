@@ -1,0 +1,442 @@
+[
+    {
+        "marche": 879503,
+        "gare_depart": "AVI",
+        "depart": 5.9,
+        "gare_arrivee": "MSC",
+        "arrivee": 7.133,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879510,
+        "gare_depart": "MSC",
+        "depart": 7.667,
+        "gare_arrivee": "AVI",
+        "arrivee": 9.083,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879511,
+        "gare_depart": "AVI",
+        "depart": 6.85,
+        "gare_arrivee": "MSC",
+        "arrivee": 8.1,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879522,
+        "gare_depart": "MSC",
+        "depart": 10.667,
+        "gare_arrivee": "AVI",
+        "arrivee": 12.033,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879527,
+        "gare_depart": "AVI",
+        "depart": 8.983,
+        "gare_arrivee": "MSC",
+        "arrivee": 10.317,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879538,
+        "gare_depart": "MSC",
+        "depart": 14.65,
+        "gare_arrivee": "AVI",
+        "arrivee": 16.067,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879539,
+        "gare_depart": "AVI",
+        "depart": 11.983,
+        "gare_arrivee": "MSC",
+        "arrivee": 13.317,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879542,
+        "gare_depart": "MSC",
+        "depart": 15.667,
+        "gare_arrivee": "AVI",
+        "arrivee": 16.983,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879543,
+        "gare_depart": "AVI",
+        "depart": 12.983,
+        "gare_arrivee": "MSC",
+        "arrivee": 14.383,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879546,
+        "gare_depart": "MSC",
+        "depart": 17.95,
+        "gare_arrivee": "AVI",
+        "arrivee": 19.15,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879555,
+        "gare_depart": "AVI",
+        "depart": 15.983,
+        "gare_arrivee": "MSC",
+        "arrivee": 17.333,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879570,
+        "gare_depart": "MSC",
+        "depart": 20.617,
+        "gare_arrivee": "AVI",
+        "arrivee": 22.033,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879571,
+        "gare_depart": "AVI",
+        "depart": 19.0,
+        "gare_arrivee": "MSC",
+        "arrivee": 20.383,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879577,
+        "gare_depart": "AVI",
+        "depart": 21.0,
+        "gare_arrivee": "MSC",
+        "arrivee": 22.417,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879582,
+        "gare_depart": "MAS",
+        "depart": 6.383,
+        "gare_arrivee": "AVI",
+        "arrivee": 7.083,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879602,
+        "gare_depart": "MAS",
+        "depart": 6.317,
+        "gare_arrivee": "AVI",
+        "arrivee": 7.467,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879603,
+        "gare_depart": "AVI",
+        "depart": 5.5,
+        "gare_arrivee": "MSC",
+        "arrivee": 7.383,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879607,
+        "gare_depart": "AVI",
+        "depart": 5.983,
+        "gare_arrivee": "MSC",
+        "arrivee": 7.783,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879610,
+        "gare_depart": "MSC",
+        "depart": 6.533,
+        "gare_arrivee": "AVI",
+        "arrivee": 8.517,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879611,
+        "gare_depart": "AVI",
+        "depart": 6.467,
+        "gare_arrivee": "MSC",
+        "arrivee": 8.317,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879614,
+        "gare_depart": "MSC",
+        "depart": 7.05,
+        "gare_arrivee": "AVI",
+        "arrivee": 8.933,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879615,
+        "gare_depart": "AVI",
+        "depart": 6.983,
+        "gare_arrivee": "MSC",
+        "arrivee": 8.767,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879618,
+        "gare_depart": "MSC",
+        "depart": 8.1,
+        "gare_arrivee": "AVV",
+        "arrivee": 10.283,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879620,
+        "gare_depart": "MSC",
+        "depart": 8.967,
+        "gare_arrivee": "AVI",
+        "arrivee": 11.033,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879621,
+        "gare_depart": "AVI",
+        "depart": 7.533,
+        "gare_arrivee": "MSC",
+        "arrivee": 9.35,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879625,
+        "gare_depart": "AVI",
+        "depart": 7.983,
+        "gare_arrivee": "MSC",
+        "arrivee": 9.8,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879626,
+        "gare_depart": "MSC",
+        "depart": 12.1,
+        "gare_arrivee": "AVV",
+        "arrivee": 14.283,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879629,
+        "gare_depart": "AVV",
+        "depart": 8.633,
+        "gare_arrivee": "MSC",
+        "arrivee": 10.767,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879630,
+        "gare_depart": "MSC",
+        "depart": 14.1,
+        "gare_arrivee": "AVV",
+        "arrivee": 16.283,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879633,
+        "gare_depart": "AVV",
+        "depart": 10.633,
+        "gare_arrivee": "MSC",
+        "arrivee": 12.8,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879634,
+        "gare_depart": "MSC",
+        "depart": 16.1,
+        "gare_arrivee": "AVI",
+        "arrivee": 17.933,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879634,
+        "gare_depart": "MSC",
+        "depart": 16.1,
+        "gare_arrivee": "AVI",
+        "arrivee": 17.933,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879637,
+        "gare_depart": "AVV",
+        "depart": 12.633,
+        "gare_arrivee": "MSC",
+        "arrivee": 14.883,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879638,
+        "gare_depart": "MSC",
+        "depart": 16.617,
+        "gare_arrivee": "AVI",
+        "arrivee": 18.517,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879641,
+        "gare_depart": "AVV",
+        "depart": 14.633,
+        "gare_arrivee": "MSC",
+        "arrivee": 16.733,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879642,
+        "gare_depart": "MSC",
+        "depart": 16.967,
+        "gare_arrivee": "AVI",
+        "arrivee": 18.933,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879645,
+        "gare_depart": "AVI",
+        "depart": 17.017,
+        "gare_arrivee": "MSC",
+        "arrivee": 18.75,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879646,
+        "gare_depart": "MSC",
+        "depart": 17.533,
+        "gare_arrivee": "AVI",
+        "arrivee": 19.517,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879649,
+        "gare_depart": "AVI",
+        "depart": 17.5,
+        "gare_arrivee": "MSC",
+        "arrivee": 19.333,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879650,
+        "gare_depart": "MSC",
+        "depart": 18.05,
+        "gare_arrivee": "AVI",
+        "arrivee": 19.95,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879651,
+        "gare_depart": "AVI",
+        "depart": 18.0,
+        "gare_arrivee": "MSC",
+        "arrivee": 19.883,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879653,
+        "gare_depart": "AVI",
+        "depart": 19.0,
+        "gare_arrivee": "MSC",
+        "arrivee": 20.75,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879653,
+        "gare_depart": "AVI",
+        "depart": 19.0,
+        "gare_arrivee": "MSC",
+        "arrivee": 20.75,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879654,
+        "gare_depart": "MSC",
+        "depart": 18.567,
+        "gare_arrivee": "AVI",
+        "arrivee": 20.5,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879656,
+        "gare_depart": "MSC",
+        "depart": 19.55,
+        "gare_arrivee": "AVI",
+        "arrivee": 21.517,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879666,
+        "gare_depart": "MSC",
+        "depart": 11.05,
+        "gare_arrivee": "CVN",
+        "arrivee": 12.25,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879667,
+        "gare_depart": "CVN",
+        "depart": 12.5,
+        "gare_arrivee": "MSC",
+        "arrivee": 13.767,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879670,
+        "gare_depart": "MSC",
+        "depart": 13.05,
+        "gare_arrivee": "CVN",
+        "arrivee": 14.25,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879671,
+        "gare_depart": "CVN",
+        "depart": 14.55,
+        "gare_arrivee": "MSC",
+        "arrivee": 15.817,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879674,
+        "gare_depart": "MSC",
+        "depart": 15.1,
+        "gare_arrivee": "CVN",
+        "arrivee": 16.25,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879675,
+        "gare_depart": "CVN",
+        "depart": 16.55,
+        "gare_arrivee": "MSC",
+        "arrivee": 17.8,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 879688,
+        "gare_depart": "MAS",
+        "depart": 10.817,
+        "gare_arrivee": "AVV",
+        "arrivee": 12.283,
+        "vide_voyageur": false
+    },
+    {
+        "marche": 999999,
+        "gare_depart": "MSC",
+        "depart": 19.75,
+        "gare_arrivee": "MAS",
+        "arrivee": 20.25,
+        "vide_voyageur": true
+    },
+    {
+        "marche": 999998,
+        "gare_depart": "MSC",
+        "depart": 20.75,
+        "gare_arrivee": "MAS",
+        "arrivee": 21.25,
+        "vide_voyageur": true
+    },
+    {
+        "marche": 999998,
+        "gare_depart": "MSC",
+        "depart": 22.75,
+        "gare_arrivee": "MAS",
+        "arrivee": 23.25,
+        "vide_voyageur": true
+    }
+]

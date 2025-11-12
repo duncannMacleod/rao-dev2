@@ -1,0 +1,49 @@
+{
+  "rames": [
+    {
+      "modele": "Corail",
+      "lettre_modèle": "C",
+      "numero_debut": 22201,
+      "longueur_m": 228.0,
+      "traction": ["AC", "DC"],
+      "capacite_places": 704,
+      "quantite": 3
+    },
+    {
+      "modele": "XTER",
+      "lettre_modèle": "X",
+      "numero_debut": 72501,
+      "longueur_m": 52.9,
+      "traction": ["diesel"],
+      "capacite_places": 150,
+      "quantite": 17
+    },
+    {
+      "modele": "BGC",
+      "lettre_modèle": "B",
+      "numero_debut": 81501,
+      "longueur_m": 72.8,
+      "traction": ["diesel", "DC"],
+      "capacite_places": 200,
+      "quantite": 27
+    },
+    {
+      "modele": "Regiolis",
+      "lettre_modèle": "B",
+      "numero_debut": 84501,
+      "longueur_m": 71.8,
+      "traction": ["diesel", "AC", "DC"],
+      "capacite_places": 220,
+      "quantite": 15
+    },
+    {
+      "modele": "TER_2NPG",
+      "lettre_modèle": "Z",
+      "numero_debut": 23501,
+      "longueur_m": 52.5,
+      "traction": ["AC", "DC"],
+      "capacite_places": 210,
+      "quantite": 30
+    }
+  ]
+}

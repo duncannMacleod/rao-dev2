@@ -1,0 +1,124 @@
+[
+    {
+        "marche": 886171,
+        "gare_depart": "LYD",
+        "depart": 9.333,
+        "gare_arrivee": "AVI",
+        "arrivee": 11.8
+    },
+    {
+        "marche": 886173,
+        "gare_depart": "LYD",
+        "depart": 10.333,
+        "gare_arrivee": "AVI",
+        "arrivee": 12.867
+    },
+    {
+        "marche": 886174,
+        "gare_depart": "AVI",
+        "depart": 5.567,
+        "gare_arrivee": "MAC",
+        "arrivee": 9.417
+    },
+    {
+        "marche": 886176,
+        "gare_depart": "AVI",
+        "depart": 6.167,
+        "gare_arrivee": "LYD",
+        "arrivee": 8.667
+    },
+    {
+        "marche": 886180,
+        "gare_depart": "AVI",
+        "depart": 6.567,
+        "gare_arrivee": "LPR",
+        "arrivee": 9.333
+    },
+    {
+        "marche": 886182,
+        "gare_depart": "AVI",
+        "depart": 7.033,
+        "gare_arrivee": "LYD",
+        "arrivee": 9.667
+    },
+    {
+        "marche": 886183,
+        "gare_depart": "LPR",
+        "depart": 15.633,
+        "gare_arrivee": "AVI",
+        "arrivee": 18.45
+    },
+    {
+        "marche": 886184,
+        "gare_depart": "AVI",
+        "depart": 12.2,
+        "gare_arrivee": "LYD",
+        "arrivee": 14.8
+    },
+    {
+        "marche": 886187,
+        "gare_depart": "LYD",
+        "depart": 16.333,
+        "gare_arrivee": "AVI",
+        "arrivee": 19.083
+    },
+    {
+        "marche": 886188,
+        "gare_depart": "AVI",
+        "depart": 16.217,
+        "gare_arrivee": "LYD",
+        "arrivee": 18.667
+    },
+    {
+        "marche": 886189,
+        "gare_depart": "LPR",
+        "depart": 17.633,
+        "gare_arrivee": "AVI",
+        "arrivee": 20.45
+    },
+    {
+        "marche": 886190,
+        "gare_depart": "AVI",
+        "depart": 17.117,
+        "gare_arrivee": "LYD",
+        "arrivee": 19.667
+    },
+    {
+        "marche": 886191,
+        "gare_depart": "LYD",
+        "depart": 18.333,
+        "gare_arrivee": "AVI",
+        "arrivee": 20.867
+    },
+    {
+        "marche": 886192,
+        "gare_depart": "AVI",
+        "depart": 19.35,
+        "gare_arrivee": "LYD",
+        "arrivee": 21.667
+    },
+    {
+        "marche": 886195,
+        "gare_depart": "LYD",
+        "depart": 19.333,
+        "gare_arrivee": "AVI",
+        "arrivee": 22.15
+    },
+    {
+        "marche": 999998,
+        "gare_depart": "MAC",
+        "depart": 10,
+        "gare_arrivee": "LYD",
+        "arrivee": 10.5,
+        "vide_voyageur": true
+    },
+    {
+        "marche": 999999,
+        "gare_depart": "LYD",
+        "depart": 20,
+        "gare_arrivee": "AVG",
+        "arrivee": 21.5,
+        "vide_voyageur": true
+
+    }
+]

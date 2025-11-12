@@ -1,0 +1,200 @@
+[
+    {
+        "marche": 879703,
+        "gare_depart": "MAS",
+        "depart": 5.567,
+        "gare_arrivee": "MSC",
+        "arrivee": 7.033
+    },
+    {
+        "marche": 879704,
+        "gare_depart": "MSC",
+        "depart": 5.867,
+        "gare_arrivee": "MAS",
+        "arrivee": 7.267
+    },
+    {
+        "marche": 879707,
+        "gare_depart": "MAS",
+        "depart": 6.133,
+        "gare_arrivee": "MSC",
+        "arrivee": 7.617
+    },
+    {
+        "marche": 879708,
+        "gare_depart": "MSC",
+        "depart": 6.733,
+        "gare_arrivee": "MAS",
+        "arrivee": 8.15
+    },
+    {
+        "marche": 879711,
+        "gare_depart": "MAS",
+        "depart": 6.567,
+        "gare_arrivee": "MSC",
+        "arrivee": 8.033
+    },
+    {
+        "marche": 879712,
+        "gare_depart": "MSC",
+        "depart": 7.733,
+        "gare_arrivee": "MAS",
+        "arrivee": 9.167
+    },
+    {
+        "marche": 879715,
+        "gare_depart": "MAS",
+        "depart": 7.133,
+        "gare_arrivee": "MSC",
+        "arrivee": 8.617
+    },
+    {
+        "marche": 879716,
+        "gare_depart": "MSC",
+        "depart": 8.733,
+        "gare_arrivee": "MAS",
+        "arrivee": 10.15
+    },
+    {
+        "marche": 879719,
+        "gare_depart": "MAS",
+        "depart": 7.567,
+        "gare_arrivee": "MSC",
+        "arrivee": 9.033
+    },
+    {
+        "marche": 879723,
+        "gare_depart": "MAS",
+        "depart": 8.567,
+        "gare_arrivee": "MSC",
+        "arrivee": 10.033
+    },
+    {
+        "marche": 879724,
+        "gare_depart": "MSC",
+        "depart": 10.867,
+        "gare_arrivee": "MAS",
+        "arrivee": 12.267
+    },
+    {
+        "marche": 879727,
+        "gare_depart": "MAS",
+        "depart": 10.567,
+        "gare_arrivee": "MSC",
+        "arrivee": 12.033
+    },
+    {
+        "marche": 879728,
+        "gare_depart": "MSC",
+        "depart": 12.817,
+        "gare_arrivee": "MAS",
+        "arrivee": 14.267
+    },
+    {
+        "marche": 879731,
+        "gare_depart": "MAS",
+        "depart": 12.567,
+        "gare_arrivee": "MSC",
+        "arrivee": 14.033
+    },
+    {
+        "marche": 879732,
+        "gare_depart": "MSC",
+        "depart": 14.25,
+        "gare_arrivee": "MAS",
+        "arrivee": 15.717
+    },
+    {
+        "marche": 879735,
+        "gare_depart": "MAS",
+        "depart": 14.567,
+        "gare_arrivee": "MSC",
+        "arrivee": 16.033
+    },
+    {
+        "marche": 879738,
+        "gare_depart": "MSC",
+        "depart": 16.383,
+        "gare_arrivee": "MAS",
+        "arrivee": 17.85
+    },
+    {
+        "marche": 879739,
+        "gare_depart": "MAS",
+        "depart": 16.0,
+        "gare_arrivee": "MSC",
+        "arrivee": 17.383
+    },
+    {
+        "marche": 879740,
+        "gare_depart": "MSC",
+        "depart": 16.667,
+        "gare_arrivee": "MAS",
+        "arrivee": 18.267
+    },
+    {
+        "marche": 879744,
+        "gare_depart": "MSC",
+        "depart": 17.467,
+        "gare_arrivee": "MAS",
+        "arrivee": 18.867
+    },
+    {
+        "marche": 879745,
+        "gare_depart": "MAS",
+        "depart": 16.733,
+        "gare_arrivee": "MSC",
+        "arrivee": 18.167
+    },
+    {
+        "marche": 879748,
+        "gare_depart": "MSC",
+        "depart": 17.733,
+        "gare_arrivee": "MAS",
+        "arrivee": 19.267
+    },
+    {
+        "marche": 879749,
+        "gare_depart": "MAS",
+        "depart": 17.733,
+        "gare_arrivee": "MSC",
+        "arrivee": 19.217
+    },
+    {
+        "marche": 879752,
+        "gare_depart": "MSC",
+        "depart": 18.367,
+        "gare_arrivee": "MAS",
+        "arrivee": 19.85
+    },
+    {
+        "marche": 879755,
+        "gare_depart": "MAS",
+        "depart": 18.733,
+        "gare_arrivee": "MSC",
+        "arrivee": 20.2
+    },
+    {
+        "marche": 879756,
+        "gare_depart": "MSC",
+        "depart": 18.867,
+        "gare_arrivee": "MAS",
+        "arrivee": 20.267
+    },
+    {
+        "marche": 879760,
+        "gare_depart": "MSC",
+        "depart": 19.867,
+        "gare_arrivee": "MAS",
+        "arrivee": 21.267
+    },
+    {
+        "marche": 999998,
+        "gare_depart": "MAS",
+        "depart": 18.5,
+        "gare_arrivee": "MBC",
+        "arrivee": 19,
+        "vide_voyageur": true
+    }
+
+]
