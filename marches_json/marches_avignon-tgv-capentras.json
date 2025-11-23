@@ -3,7 +3,7 @@
         "marche": 879302,
         "gare_depart": "AVV",
         "depart": 6.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 6.8
     },
     {
@@ -17,12 +17,12 @@
         "marche": 879306,
         "gare_depart": "AVV",
         "depart": 6.667,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 7.317
     },
     {
         "marche": 879307,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 6.1,
         "gare_arrivee": "AVV",
         "arrivee": 6.733
@@ -31,20 +31,20 @@
         "marche": 879310,
         "gare_depart": "AVV",
         "depart": 7.15,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 7.833
     },
     {
         "marche": 879399,
         "gare_depart": "AVG",
         "depart": 5.5,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 5.833,
         "vide_voyageur":true
     },
     {
         "marche": 879311,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 7.1,
         "gare_arrivee": "AVV",
         "arrivee": 7.75
@@ -60,12 +60,12 @@
         "marche": 879314,
         "gare_depart": "AVV",
         "depart": 7.633,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 8.333
     },
     {
         "marche": 879315,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 7.583,
         "gare_arrivee": "AVV",
         "arrivee": 8.283
@@ -74,12 +74,12 @@
         "marche": 879318,
         "gare_depart": "AVV",
         "depart": 8.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 8.833
     },
     {
         "marche": 879319,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 8.1,
         "gare_arrivee": "AVV",
         "arrivee": 8.733
@@ -88,12 +88,12 @@
         "marche": 879322,
         "gare_depart": "AVV",
         "depart": 9.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 9.8
     },
     {
         "marche": 879323,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 8.583,
         "gare_arrivee": "AVV",
         "arrivee": 9.283
@@ -107,14 +107,14 @@
     },
     {
         "marche": 879325,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 9.1,
         "gare_arrivee": "AVV",
         "arrivee": 9.733
     },
     {
         "marche": 879327,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 10.1,
         "gare_arrivee": "AVV",
         "arrivee": 10.733
@@ -123,7 +123,7 @@
         "marche": 879328,
         "gare_depart": "AVV",
         "depart": 10.15,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 10.8
     },
     {
@@ -156,7 +156,7 @@
     },
     {
         "marche": 879339,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 12.1,
         "gare_arrivee": "AVV",
         "arrivee": 12.733
@@ -165,7 +165,7 @@
         "marche": 879340,
         "gare_depart": "AVV",
         "depart": 12.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 12.8
     },
     {
@@ -179,12 +179,12 @@
         "marche": 879344,
         "gare_depart": "AVV",
         "depart": 13.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 13.8
     },
     {
         "marche": 879347,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 13.1,
         "gare_arrivee": "AVV",
         "arrivee": 13.733
@@ -200,7 +200,7 @@
         "marche": 879350,
         "gare_depart": "AVV",
         "depart": 14.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 14.833
     },
     {
@@ -212,7 +212,7 @@
     },
     {
         "marche": 879353,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 14.567,
         "gare_arrivee": "AVV",
         "arrivee": 15.283
@@ -221,12 +221,12 @@
         "marche": 879354,
         "gare_depart": "AVV",
         "depart": 15.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 15.8
     },
     {
         "marche": 879357,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 15.1,
         "gare_arrivee": "AVV",
         "arrivee": 15.733
@@ -240,7 +240,7 @@
     },
     {
         "marche": 879361,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 16.1,
         "gare_arrivee": "AVV",
         "arrivee": 16.733
@@ -249,14 +249,14 @@
         "marche": 879362,
         "gare_depart": "AVV",
         "depart": 16.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 16.8
     },
     {
         "marche": 879364,
         "gare_depart": "AVI",
         "depart": 16.583,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 17.05
     },
     {
@@ -275,7 +275,7 @@
     },
     {
         "marche": 879369,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 17.1,
         "gare_arrivee": "AVV",
         "arrivee": 17.733
@@ -284,12 +284,12 @@
         "marche": 879370,
         "gare_depart": "AVV",
         "depart": 17.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 17.833
     },
     {
         "marche": 879371,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 17.55,
         "gare_arrivee": "AVV",
         "arrivee": 18.283
@@ -298,12 +298,12 @@
         "marche": 879374,
         "gare_depart": "AVV",
         "depart": 17.633,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 18.333
     },
     {
         "marche": 879375,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 18.1,
         "gare_arrivee": "AVV",
         "arrivee": 18.733
@@ -312,7 +312,7 @@
         "marche": 879378,
         "gare_depart": "AVV",
         "depart": 18.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 18.8
     },
     {
@@ -338,7 +338,7 @@
     },
     {
         "marche": 879383,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 19.1,
         "gare_arrivee": "AVV",
         "arrivee": 19.733
@@ -347,7 +347,7 @@
         "marche": 879386,
         "gare_depart": "AVV",
         "depart": 19.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 19.8
     },
     {
@@ -361,12 +361,12 @@
         "marche": 879390,
         "gare_depart": "AVV",
         "depart": 20.133,
-        "gare_arrivee": "IIM",
+        "gare_arrivee": "CAS",
         "arrivee": 20.8
     },
     {
         "marche": 879999,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 21.08,
         "gare_arrivee": "AVG",
         "arrivee": 21.416,
@@ -374,7 +374,7 @@
     },
     {
         "marche": 879391,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 20.1,
         "gare_arrivee": "AVV",
         "arrivee": 20.85
@@ -395,7 +395,7 @@
     },
     {
         "marche": 879395,
-        "gare_depart": "IIM",
+        "gare_depart": "CAS",
         "depart": 20.967,
         "gare_arrivee": "AVI",
         "arrivee": 21.467

@@ -326,7 +326,7 @@ def draw_pdf_for_assignments(df_assign, json_file):
     c.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 20, titre)
     # -------------------------------------
 
-
+    
     # km par rame
     df_km_par_rame = (
         df_assign[~df_assign["vide_voyageur"]]

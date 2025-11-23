@@ -11,7 +11,7 @@ from reportlab.lib.units import mm
 DOSSIER_JSON = "marches_json"
 KM_MARCHES_FILE = "km_marches.json"
 
-# Paramètres métiers (repris de ton code)
+# Paramètres métiers
 m_st_chrls = "MSC"
 navette_time = 0.083
 tampon = 0.333
@@ -19,15 +19,15 @@ tampon_15m = 0.25
 temps_minimal = 0.20
 seuil_atelier = 1.25
 
-# Parc de rames (repris)
+# Parc de rames
 parc = {
-    "C": {"modele": "Corail", "numero": 22201, "quantite": 3, "utilise": 0, "places": 704},
-    "BGC": {"modele": "BGC", "numero": 81501, "quantite": 27, "utilise": 0, "places": 200},
-    "REG": {"modele": "Regiolis", "numero": 84501, "quantite": 15, "utilise": 0, "places": 220},
-    "2NPG": {"modele": "2NPG", "numero": 23501, "quantite": 30, "utilise": 0, "places": 210},
+    "C":    {"modele": "Corail",   "numero": 22201, "quantite": 3,  "utilise": 0, "places": 704},
+    "BGC":  {"modele": "BGC",      "numero": 81501, "quantite": 27, "utilise": 0, "places": 200},
+    "REG":  {"modele": "Regiolis", "numero": 84501, "quantite": 15, "utilise": 0, "places": 220},
+    "2NPG": {"modele": "2NPG",     "numero": 23501, "quantite": 30, "utilise": 0, "places": 210},
 }
 
-# ------------------ Fonctions d'affectation (repris) ------------------
+# ------------------ Fonctions d'affectation ------------------
 def get_rame_id(nom_ligne: str):
     """Retourne un ID de rame en fonction du fichier de marches."""
     if nom_ligne == "marches_intervilles-marseille-lyon.json":
@@ -215,11 +215,17 @@ HAUTEUR_DISPO = PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN
 RAME_HEIGHT = (HAUTEUR_DISPO - (MAX_RAMES_PER_PAGE - 1) * ESPACEMENT_RAME) / MAX_RAMES_PER_PAGE
 
 HEURE_MIN = 4
-HEURE_MAX = 21
+HEURE_MAX = 23
 ECHELLE_HEURE = (PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN) / (HEURE_MAX - HEURE_MIN)
 
-# Offset en points pour la gare de départ de la 1ʳᵉ marche
+# Fenêtre de référence pour la performance (en heure décimale)
+WINDOW_START = 5.5   # 5h30
+WINDOW_END   = 22.5  # 22h30
+WINDOW_DURATION = WINDOW_END - WINDOW_START  # 17h
+
+# Décalage horizontal (en points) pour la première / dernière gare
 FIRST_LABEL_OFFSET = 15
+LAST_LABEL_OFFSET = 15
 
 
 def x_from_time(horaire):
@@ -231,16 +237,6 @@ def draw_train_bar(c, x1, x2, y, height=5, color=colors.black):
     """Barre horizontale pour une marche (voyageurs ou HLP)."""
     c.setFillColor(color)
     c.rect(x1, y - height / 2, x2 - x1, height, stroke=0, fill=1)
-
-
-# utilitaires pour l'affichage horaire
-def h_dec_to_hm(h):
-    h_int = int(h)
-    m = int(round((h - h_int) * 60))
-    if m == 60:
-        h_int += 1
-        m = 0
-    return f"{h_int:02d}:{m:02d}"
 
 
 def format_time_hm(h):
@@ -311,211 +307,7 @@ def get_distance_safe(row):
         return 0
 
 
-# ------------------ Génération PDF à partir des assignments ------------------
-def draw_pdf_for_assignments(df_assign, json_file):
-    """Génère un PDF par df_assign (qui contient les marches affectées)."""
-    rame_list = sorted(df_assign["rame"].unique())
-    nom_pdf = os.path.splitext(os.path.basename(json_file))[0] + ".pdf"
-    c = canvas.Canvas(nom_pdf, pagesize=A4)
-
-    # km par rame
-    df_km_par_rame = (
-        df_assign[~df_assign["vide_voyageur"]]
-        .groupby("rame")["distance_km"]
-        .sum()
-        .reset_index()
-    )
-
-    y_start = PAGE_HEIGHT - TOP_MARGIN
-    rame_counter = 0
-
-    for rame in rame_list:
-
-        if rame_counter >= MAX_RAMES_PER_PAGE:
-            c.showPage()
-            y_start = PAGE_HEIGHT - TOP_MARGIN
-            rame_counter = 0
-
-        sous_df = df_assign[df_assign["rame"] == rame].sort_values("depart")
-
-        cadre_top = y_start
-        cadre_bottom = y_start - RAME_HEIGHT
-
-        # Cadre
-        c.setStrokeColor(colors.HexColor("#3A7ECB"))
-        c.setLineWidth(1.0)
-        c.rect(
-            LEFT_MARGIN,
-            cadre_bottom,
-            PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN,
-            RAME_HEIGHT,
-            stroke=1,
-            fill=0,
-        )
-
-        # Titre rame
-        c.setFont("Helvetica-Bold", 9)
-        c.setFillColor(colors.black)
-        c.drawString(LEFT_MARGIN + 6, cadre_top - 12, f"Rame {rame}")
-
-        # Km total
-        total_rame_km = df_km_par_rame.loc[
-            df_km_par_rame["rame"] == rame, "distance_km"
-        ]
-        if not total_rame_km.empty:
-            total_rame_km = int(total_rame_km.values[0])
-            c.setFont("Helvetica-Bold", 8)
-            c.setFillColor(colors.blue)
-            c.drawString(LEFT_MARGIN + 6, cadre_bottom + 4, f"{total_rame_km} km")
-            c.setFillColor(colors.black)
-
-        # Ligne centrale
-        y_line = cadre_bottom + (RAME_HEIGHT / 2)
-        c.setStrokeColor(colors.black)
-        c.setLineWidth(0.6)
-        c.line(LEFT_MARGIN, y_line, PAGE_WIDTH - RIGHT_MARGIN, y_line)
-
-        # Traits horaires (toutes les heures)
-        c.setFont("Helvetica", 4)
-        for h in range(HEURE_MIN, HEURE_MAX + 1):
-            xh = x_from_time(h)
-
-            # ligne verticale pointillée
-            c.setStrokeColor(colors.lightgrey)
-            c.setDash(1, 2)   # 1 point, 2 espaces
-            c.line(xh, cadre_bottom, xh, cadre_top)
-            c.setDash()       # reset style
-
-            # Heure en tout petit
-            c.setFillColor(colors.black)
-            c.drawString(xh - 5, cadre_top - 6, f"{h}h")
-
-        # Marches avec gestion des nœuds de gare
-        prev_node = None  # {"gare", "x", "heure"}
-        prev_arrivee = None
-        premiere_marche = True  # pour l'offset de la 1ʳᵉ marche
-
-        for _, row in sous_df.iterrows():
-            x1 = x_from_time(row["depart"])
-            x2 = x_from_time(row["arrivee"])
-
-            if x2 < LEFT_MARGIN:
-                continue
-            if x1 > PAGE_WIDTH - RIGHT_MARGIN:
-                continue
-            x1 = max(x1, LEFT_MARGIN + 2)
-            x2 = min(x2, PAGE_WIDTH - RIGHT_MARGIN - 2)
-
-            # Couleur différentes HLP / voyageurs
-            if row.get("vide_voyageur", False):
-                bar_color = colors.lightgrey  # HLP
-            else:
-                bar_color = colors.black      # voyageurs
-
-            draw_train_bar(c, x1, x2, y_line, height=5, color=bar_color)
-
-            # Infos de la marche
-            gare_dep = str(row["gare_depart"])
-            gare_arr = str(row["gare_arrivee"])
-            heure_dep = format_time_hm(row["depart"])
-            heure_arr = format_time_hm(row["arrivee"])
-
-            # 1) Traiter d'abord l'arrivée précédente si elle existe
-            depart_label_deja_fait = False
-            c.setFillColor(colors.black)
-
-            if prev_node is not None:
-                if prev_node["gare"] == gare_dep:
-                    # Cas même gare arrivée précédente -> départ courant
-                    xm = (prev_node["x"] + x1) / 2.0
-                    y_base = y_line - 7
-
-                    c.setFont("Helvetica", 5)
-                    c.drawCentredString(xm, y_base, prev_node["gare"])
-
-                    draw_time_only(
-                        c, prev_node["x"], y_base - 5, prev_node["heure"], align="center"
-                    )
-                    draw_time_only(
-                        c, x1, y_base - 9, heure_dep, align="center"
-                    )
-
-                    depart_label_deja_fait = True
-                else:
-                    draw_station_label(
-                        c,
-                        prev_node["x"] - 1,
-                        y_line - 7,
-                        prev_node["gare"],
-                        prev_node["heure"],
-                        align="right",
-                    )
-
-            # 2) Départ courant (si pas déjà géré)
-            if not depart_label_deja_fait:
-                # position naturelle du label = juste après le début de la barre
-                base_x = x1 + 1
-
-                if premiere_marche:
-                    # pour la 1ʳᵉ marche de la rame : on décale juste de quelques pixels
-                    x_depart = base_x - FIRST_LABEL_OFFSET
-                else:
-                    x_depart = base_x
-
-                draw_station_label(
-                    c, x_depart, y_line - 7, gare_dep, heure_dep, align="left"
-    )
-
-
-            # 3) Numéro de marche
-            c.setFont("Helvetica", 6)
-            c.setFillColor(colors.darkgray)
-            marche_text = str(row["marche"])
-            c.drawCentredString((x1 + x2) / 2, y_line + 7, marche_text)
-
-            # 4) Avertissement écart < 20 min
-            if prev_arrivee is not None:
-                ecart = row["depart"] - prev_arrivee
-                if ecart < 0.333:
-                    minutes = int(round(ecart * 60))
-                    milieu = (row["depart"] + prev_arrivee) / 2
-                    xm = x_from_time(milieu)
-                    c.setFont("Helvetica-Bold", 4)
-                    c.setFillColor(colors.red)
-                    c.drawCentredString(xm, y_line, f"{minutes}")
-                    c.setFillColor(colors.black)
-
-            prev_arrivee = row["arrivee"]
-
-            # 5) Préparer le nœud d'arrivée pour la prochaine marche
-            prev_node = {
-                "gare": gare_arr,
-                "x": x2,
-                "heure": heure_arr,
-            }
-
-            premiere_marche = False
-
-        # 6) Après la dernière marche : dessiner l'arrivée finale si elle existe
-        if prev_node is not None:
-            draw_station_label(
-                c,
-                prev_node["x"] - 1,
-                y_line - 7,
-                prev_node["gare"],
-                prev_node["heure"],
-                align="right",
-            )
-
-        y_start -= (RAME_HEIGHT + ESPACEMENT_RAME)
-        rame_counter += 1
-    # ➜ Ajout de la page récap des paramètres
-    draw_params_page(c, json_file)
-
-    c.save()
-    print(f"PDF généré : {nom_pdf}")
-    
-    
+# ------------------ Page paramètres ------------------
 def draw_params_page(c, json_file):
     """Ajoute une page récap avec les paramètres de l'algo d'attribution."""
     c.showPage()
@@ -529,6 +321,7 @@ def draw_params_page(c, json_file):
     y = PAGE_HEIGHT - 70
     line_height = 12
 
+    # --- Paramètres généraux ---
     c.setFont("Helvetica-Bold", 10)
     c.drawString(LEFT_MARGIN, y, "Paramètres généraux :")
     y -= line_height
@@ -545,6 +338,7 @@ def draw_params_page(c, json_file):
     c.drawString(LEFT_MARGIN, y, f"• Durée navette (HLP dépôt↔gare) : {navette_time:.3f} h (~{int(navette_time*60)} min)")
     y -= line_height
 
+    # --- Paramètres d'affichage ---
     y -= line_height // 2
     c.setFont("Helvetica-Bold", 10)
     c.drawString(LEFT_MARGIN, y, "Paramètres d'affichage :")
@@ -558,6 +352,39 @@ def draw_params_page(c, json_file):
     c.drawString(LEFT_MARGIN, y, "• Affichage minutes uniquement pour les heures de départ / arrivée")
     y -= line_height
 
+    # --- Indicateur de performance ---
+    y -= line_height // 2
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(LEFT_MARGIN, y, "Indicateur de performance :")
+    y -= line_height
+
+    c.setFont("Helvetica", 9)
+    c.drawString(
+        LEFT_MARGIN,
+        y,
+        f"• Fenêtre de référence : {WINDOW_START:.2f}h → {WINDOW_END:.2f}h (≈ 5h30–22h30)"
+    )
+    y -= line_height
+    c.drawString(
+        LEFT_MARGIN,
+        y,
+        f"• Durée de la fenêtre : {WINDOW_DURATION:.1f} h"
+    )
+    y -= line_height
+    c.drawString(
+        LEFT_MARGIN,
+        y,
+        "• Pour chaque rame : somme des durées en marche voyageurs dans cette fenêtre"
+    )
+    y -= line_height
+    c.drawString(
+        LEFT_MARGIN,
+        y,
+        "  divisée par la durée de la fenêtre, affichée en pourcentage (Perf : XX%)."
+    )
+    y -= line_height
+
+    # --- Parc de rames ---
     y -= line_height // 2
     c.setFont("Helvetica-Bold", 10)
     c.drawString(LEFT_MARGIN, y, "Parc de rames utilisé :")
@@ -571,12 +398,315 @@ def draw_params_page(c, json_file):
         c.drawString(LEFT_MARGIN, y, txt)
         y -= line_height
         if y < BOTTOM_MARGIN + 40:
-            # nouvelle page si on descend trop bas
             c.showPage()
             y = PAGE_HEIGHT - TOP_MARGIN
 
 
-# ------------------ Boucle principale : pour chaque JSON ------------------
+# ------------------ Génération PDF à partir des assignments ------------------
+def draw_pdf_for_assignments(df_assign, json_file):
+    """
+    Génére un PDF pour un fichier de marches :
+    - un cadre par rame
+    - affichage de la ligne de roulement (hier -> aujourd'hui -> demain)
+      avec compatibilité gare fin / gare début pour le lendemain.
+    """
+    rame_list = sorted(df_assign["rame"].unique())
+    nom_pdf = os.path.splitext(os.path.basename(json_file))[0] + ".pdf"
+    c = canvas.Canvas(nom_pdf, pagesize=A4)
+
+    # ------- Titre du document PDF -------
+    titre = os.path.splitext(os.path.basename(json_file))[0]
+    c.setFont("Helvetica-Bold", 14)
+    c.setFillColor(colors.black)
+    c.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 20, titre)
+    # -------------------------------------
+
+    # km par rame
+    df_km_par_rame = (
+        df_assign[~df_assign["vide_voyageur"]]
+        .groupby("rame")["distance_km"]
+        .sum()
+        .reset_index()
+    )
+
+    # --- Début / fin de journée pour chaque rame ---
+    df_sorted_dep = df_assign.sort_values("depart")
+    firsts = df_sorted_dep.groupby("rame").first()
+
+    df_sorted_arr = df_assign.sort_values("arrivee")
+    lasts = df_sorted_arr.groupby("rame").last()
+
+    start_station = firsts["gare_depart"].to_dict()  # rame -> gare départ du jour
+    end_station   = lasts["gare_arrivee"].to_dict()  # rame -> gare arrivée du jour
+
+    # Numérotation de 1..N pour les lignes de roulement
+    nb_rames = len(rame_list)
+    rame_to_line = {rame: idx + 1 for idx, rame in enumerate(rame_list)}
+
+    # --- Compatibilités : quelle ligne peut suivre laquelle ? ---
+    compatible = {i + 1: [] for i in range(nb_rames)}
+
+    for i, rame_i in enumerate(rame_list):
+        li = i + 1
+        end_i = end_station.get(rame_i)
+
+        for j, rame_j in enumerate(rame_list):
+            lj = j + 1
+            if end_i is not None and start_station.get(rame_j) == end_i and li != lj:
+                compatible[li].append(lj)
+
+        # Si aucune compatibilité trouvée, on autorise au moins la boucle sur soi-même
+        if not compatible[li]:
+            compatible[li].append(li)
+
+    # --- Matching biparti ligne_auj -> ligne_demain ---
+    next_line = {}   # ligne_auj -> ligne_demain
+    matchR = {}      # ligne_demain -> ligne_auj
+
+    def dfs_match(i, seen):
+        """Tentative d'affecter la ligne i à une ligne de demain compatible."""
+        for j in compatible[i]:
+            if j in seen:
+                continue
+            seen.add(j)
+            if j not in matchR or dfs_match(matchR[j], seen):
+                matchR[j] = i
+                return True
+        return False
+
+    for i in range(1, nb_rames + 1):
+        dfs_match(i, set())
+
+    for j, i in matchR.items():
+        next_line[i] = j
+
+    for i in range(1, nb_rames + 1):
+        if i not in next_line:
+            next_line[i] = (i % nb_rames) + 1
+
+    prev_line = {i: i for i in range(1, nb_rames + 1)}
+    for i, j in next_line.items():
+        prev_line[j] = i
+
+    # --- Performance : temps en marche voyageur dans la fenêtre [5h30, 22h30] ---
+    df_voy = df_assign[~df_assign["vide_voyageur"]].copy()
+
+    if not df_voy.empty:
+        df_voy["depart_clip"] = df_voy["depart"].clip(lower=WINDOW_START, upper=WINDOW_END)
+        df_voy["arrivee_clip"] = df_voy["arrivee"].clip(lower=WINDOW_START, upper=WINDOW_END)
+        df_voy["duree_fenetre"] = (df_voy["arrivee_clip"] - df_voy["depart_clip"]).clip(lower=0)
+
+        df_perf_par_rame = (
+            df_voy.groupby("rame")["duree_fenetre"]
+            .sum()
+            .reset_index()
+        )
+        df_perf_par_rame["taux_utilisation"] = (
+            df_perf_par_rame["duree_fenetre"] / WINDOW_DURATION * 100.0
+        )
+    else:
+        df_perf_par_rame = pd.DataFrame(columns=["rame", "duree_fenetre", "taux_utilisation"])
+
+    y_start = PAGE_HEIGHT - TOP_MARGIN
+    rame_counter = 0
+
+    for rame in rame_list:
+
+        if rame_counter >= MAX_RAMES_PER_PAGE:
+            c.showPage()
+            y_start = PAGE_HEIGHT - TOP_MARGIN
+            rame_counter = 0
+
+        sous_df = df_assign[df_assign["rame"] == rame].sort_values("depart")
+
+        cadre_top = y_start
+        cadre_bottom = y_start - RAME_HEIGHT
+
+        # ---- Numéro de ligne de roulement (hier / aujourd'hui / demain) ----
+        ligne_auj = rame_to_line[rame]
+        ligne_demain = next_line.get(ligne_auj, ligne_auj)
+        ligne_hier = prev_line.get(ligne_auj, ligne_auj)
+        texte_roulement = f"{ligne_hier} ➜ {ligne_auj} ➜ {ligne_demain}"
+        # --------------------------------------------------------------------
+
+        # Cadre
+        c.setStrokeColor(colors.HexColor("#3A7ECB"))
+        c.setLineWidth(1.0)
+        c.rect(
+            LEFT_MARGIN,
+            cadre_bottom,
+            PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN,
+            RAME_HEIGHT,
+            stroke=1,
+            fill=0,
+        )
+
+        # Titre rame (roulement)
+        c.setFont("Helvetica-Bold", 5)
+        c.setFillColor(colors.magenta)
+        c.drawString(LEFT_MARGIN + 6, cadre_top - 12, texte_roulement)
+
+        # Km total
+        total_rame_km = df_km_par_rame.loc[
+            df_km_par_rame["rame"] == rame, "distance_km"
+        ]
+        if not total_rame_km.empty:
+            total_rame_km = int(total_rame_km.values[0])
+            c.setFont("Helvetica-Bold", 5)
+            c.setFillColor(colors.blue)
+            c.drawString(LEFT_MARGIN + 6, cadre_bottom + 4, f"{total_rame_km} km")
+            c.setFillColor(colors.black)
+
+        # Indicateur de performance
+        perf_row = df_perf_par_rame.loc[df_perf_par_rame["rame"] == rame, "taux_utilisation"]
+        if not perf_row.empty:
+            perf_val = perf_row.values[0]
+            txt_perf = f"Perf : {perf_val:.0f}%"
+            c.setFont("Helvetica-Bold", 5)
+            c.setFillColor(colors.green)
+            c.drawRightString(PAGE_WIDTH - RIGHT_MARGIN - 6, cadre_bottom + 4, txt_perf)
+            c.setFillColor(colors.black)
+
+        # Ligne centrale
+        y_line = cadre_bottom + (RAME_HEIGHT / 2)
+        c.setStrokeColor(colors.black)
+        c.setLineWidth(0.6)
+        c.line(LEFT_MARGIN, y_line, PAGE_WIDTH - RIGHT_MARGIN, y_line)
+
+        # Traits horaires
+        c.setFont("Helvetica", 4)
+        for h in range(HEURE_MIN, HEURE_MAX + 1):
+            xh = x_from_time(h)
+            c.setStrokeColor(colors.lightgrey)
+            c.setDash(1, 2)
+            c.line(xh, cadre_bottom, xh, cadre_top)
+            c.setDash()
+            c.setFillColor(colors.black)
+            c.drawString(xh - 5, cadre_top - 6, f"{h}h")
+
+        # Marches + nœuds
+        prev_node = None
+        prev_arrivee = None
+        premiere_marche = True
+
+        for _, row in sous_df.iterrows():
+            x1 = x_from_time(row["depart"])
+            x2 = x_from_time(row["arrivee"])
+
+            if x2 < LEFT_MARGIN:
+                continue
+            if x1 > PAGE_WIDTH - RIGHT_MARGIN:
+                continue
+            x1 = max(x1, LEFT_MARGIN + 2)
+            x2 = min(x2, PAGE_WIDTH - RIGHT_MARGIN - 2)
+
+            if row.get("vide_voyageur", False):
+                bar_color = colors.lightgrey
+            else:
+                bar_color = colors.black
+
+            draw_train_bar(c, x1, x2, y_line, height=5, color=bar_color)
+
+            gare_dep = str(row["gare_depart"])
+            gare_arr = str(row["gare_arrivee"])
+            heure_dep = format_time_hm(row["depart"])
+            heure_arr = format_time_hm(row["arrivee"])
+
+            depart_label_deja_fait = False
+            c.setFillColor(colors.black)
+
+            if prev_node is not None:
+                if prev_node["gare"] == gare_dep:
+                    xm = (prev_node["x"] + x1) / 2.0
+                    y_base = y_line - 7
+
+                    c.setFont("Helvetica", 5)
+                    c.drawCentredString(xm, y_base, prev_node["gare"])
+
+                    draw_time_only(
+                        c, prev_node["x"], y_base - 5, prev_node["heure"], align="center"
+                    )
+                    draw_time_only(
+                        c, x1, y_base - 10, heure_dep, align="center"
+                    )
+
+                    depart_label_deja_fait = True
+                else:
+                    draw_station_label(
+                        c,
+                        prev_node["x"] - 1,
+                        y_line - 7,
+                        prev_node["gare"],
+                        prev_node["heure"],
+                        align="right",
+                    )
+
+            if not depart_label_deja_fait:
+                base_x = x1 + 1
+                if premiere_marche:
+                    x_depart = base_x - FIRST_LABEL_OFFSET
+                else:
+                    x_depart = base_x
+
+                draw_station_label(
+                    c, x_depart, y_line - 7, gare_dep, heure_dep, align="left"
+                )
+
+            c.setFont("Helvetica", 5)
+            c.setFillColor(colors.darkgray)
+            marche_text = str(row["marche"])
+
+            if row.get("vide_voyageur", False):
+                y_num = y_line + 12
+            else:
+                y_num = y_line + 7
+
+            c.drawCentredString((x1 + x2) / 2, y_num, marche_text)
+
+            if prev_arrivee is not None:
+                ecart = row["depart"] - prev_arrivee
+                if ecart < 0.333:
+                    minutes = int(round(ecart * 60))
+                    milieu = (row["depart"] + prev_arrivee) / 2
+                    xm = x_from_time(milieu)
+                    c.setFont("Helvetica-Bold", 4)
+                    c.setFillColor(colors.red)
+                    c.drawCentredString(xm, y_line, f"{minutes}")
+                    c.setFillColor(colors.black)
+
+            prev_arrivee = row["arrivee"]
+
+            prev_node = {
+                "gare": gare_arr,
+                "x": x2,
+                "heure": heure_arr,
+            }
+
+            premiere_marche = False
+
+        # Dernière arrivée avec offset vers la droite
+        if prev_node is not None:
+            x_last = prev_node["x"] + LAST_LABEL_OFFSET
+            draw_station_label(
+                c,
+                x_last,
+                y_line - 7,
+                prev_node["gare"],
+                prev_node["heure"],
+                align="right",
+            )
+
+        y_start -= (RAME_HEIGHT + ESPACEMENT_RAME)
+        rame_counter += 1
+
+    # Page récap paramètres
+    draw_params_page(c, json_file)
+
+    c.save()
+    print(f"PDF généré : {nom_pdf}")
+
+
+# ------------------ Boucle principale ------------------
 def process_and_generate():
     # reset parc
     for k in parc:
@@ -638,7 +768,7 @@ def process_and_generate():
             rame_state[candidate]["gare"] = train["gare_arrivee"]
             rame_state[candidate]["dispo"] = train["arrivee"]
 
-        # navette soir
+        # Navette soir
         for rame_id, state in rame_state.items():
             soir = navette_soir(rame_id, state["gare"], state["dispo"])
             if soir:
