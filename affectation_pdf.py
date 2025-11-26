@@ -307,13 +307,21 @@ def get_distance_safe(row):
         return 0
 
 
+def get_materiel_code_from_rame(rame_id):
+    """Retourne le code matériel (C / BGC / REG / 2NPG) à partir d'un numéro de rame."""
+    for code, info in parc.items():
+        if info["numero"] <= rame_id < info["numero"] + info["quantite"]:
+            return code
+    return None
+
+
 # ------------------ Page paramètres ------------------
-def draw_params_page(c, json_file):
+def draw_params_page(c, titre_suffix):
     """Ajoute une page récap avec les paramètres de l'algo d'attribution."""
     c.showPage()
 
     # Titre de la page
-    titre = f"Paramètres de l'attribution – {os.path.splitext(os.path.basename(json_file))[0]}"
+    titre = f"Paramètres de l'attribution – {titre_suffix}"
     c.setFont("Helvetica-Bold", 14)
     c.setFillColor(colors.black)
     c.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 40, titre)
@@ -402,20 +410,21 @@ def draw_params_page(c, json_file):
             y = PAGE_HEIGHT - TOP_MARGIN
 
 
-# ------------------ Génération PDF à partir des assignments ------------------
-def draw_pdf_for_assignments(df_assign, json_file):
+# ------------------ PDF par matériel ------------------
+def draw_pdf_for_material(df_assign_mat, materiel_code):
     """
-    Génére un PDF pour un fichier de marches :
-    - un cadre par rame
-    - affichage de la ligne de roulement (hier -> aujourd'hui -> demain)
-      avec compatibilité gare fin / gare début pour le lendemain.
+    Génère un PDF pour un type de matériel donné (C, BGC, REG, 2NPG).
     """
-    rame_list = sorted(df_assign["rame"].unique())
-    nom_pdf = os.path.splitext(os.path.basename(json_file))[0] + ".pdf"
+    if df_assign_mat.empty:
+        return
+
+    rame_list = sorted(df_assign_mat["rame"].unique())
+
+    nom_pdf = f"roulements_{materiel_code}.pdf"
     c = canvas.Canvas(nom_pdf, pagesize=A4)
 
     # ------- Titre du document PDF -------
-    titre = os.path.splitext(os.path.basename(json_file))[0]
+    titre = f"Roulements – {materiel_code}"
     c.setFont("Helvetica-Bold", 14)
     c.setFillColor(colors.black)
     c.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 20, titre)
@@ -423,27 +432,27 @@ def draw_pdf_for_assignments(df_assign, json_file):
 
     # km par rame
     df_km_par_rame = (
-        df_assign[~df_assign["vide_voyageur"]]
+        df_assign_mat[~df_assign_mat["vide_voyageur"]]
         .groupby("rame")["distance_km"]
         .sum()
         .reset_index()
     )
 
     # --- Début / fin de journée pour chaque rame ---
-    df_sorted_dep = df_assign.sort_values("depart")
+    df_sorted_dep = df_assign_mat.sort_values("depart")
     firsts = df_sorted_dep.groupby("rame").first()
 
-    df_sorted_arr = df_assign.sort_values("arrivee")
+    df_sorted_arr = df_assign_mat.sort_values("arrivee")
     lasts = df_sorted_arr.groupby("rame").last()
 
-    start_station = firsts["gare_depart"].to_dict()  # rame -> gare départ du jour
-    end_station   = lasts["gare_arrivee"].to_dict()  # rame -> gare arrivée du jour
+    start_station = firsts["gare_depart"].to_dict()
+    end_station   = lasts["gare_arrivee"].to_dict()
 
-    # Numérotation de 1..N pour les lignes de roulement
+    # Numérotation lignes de roulement 1..N sur ce matériel
     nb_rames = len(rame_list)
     rame_to_line = {rame: idx + 1 for idx, rame in enumerate(rame_list)}
 
-    # --- Compatibilités : quelle ligne peut suivre laquelle ? ---
+    # --- Compatibilités ligne_auj -> ligne_demain (même gare fin/début) ---
     compatible = {i + 1: [] for i in range(nb_rames)}
 
     for i, rame_i in enumerate(rame_list):
@@ -455,16 +464,13 @@ def draw_pdf_for_assignments(df_assign, json_file):
             if end_i is not None and start_station.get(rame_j) == end_i and li != lj:
                 compatible[li].append(lj)
 
-        # Si aucune compatibilité trouvée, on autorise au moins la boucle sur soi-même
         if not compatible[li]:
             compatible[li].append(li)
 
-    # --- Matching biparti ligne_auj -> ligne_demain ---
-    next_line = {}   # ligne_auj -> ligne_demain
-    matchR = {}      # ligne_demain -> ligne_auj
+    next_line = {}
+    matchR = {}
 
     def dfs_match(i, seen):
-        """Tentative d'affecter la ligne i à une ligne de demain compatible."""
         for j in compatible[i]:
             if j in seen:
                 continue
@@ -488,8 +494,8 @@ def draw_pdf_for_assignments(df_assign, json_file):
     for i, j in next_line.items():
         prev_line[j] = i
 
-    # --- Performance : temps en marche voyageur dans la fenêtre [5h30, 22h30] ---
-    df_voy = df_assign[~df_assign["vide_voyageur"]].copy()
+    # --- Performance : temps en marche voyageur dans la fenêtre ---
+    df_voy = df_assign_mat[~df_assign_mat["vide_voyageur"]].copy()
 
     if not df_voy.empty:
         df_voy["depart_clip"] = df_voy["depart"].clip(lower=WINDOW_START, upper=WINDOW_END)
@@ -517,17 +523,21 @@ def draw_pdf_for_assignments(df_assign, json_file):
             y_start = PAGE_HEIGHT - TOP_MARGIN
             rame_counter = 0
 
-        sous_df = df_assign[df_assign["rame"] == rame].sort_values("depart")
+        sous_df = df_assign_mat[df_assign_mat["rame"] == rame].sort_values("depart")
 
         cadre_top = y_start
         cadre_bottom = y_start - RAME_HEIGHT
 
-        # ---- Numéro de ligne de roulement (hier / aujourd'hui / demain) ----
+        # ---- Roulement + axe ferroviaire ----
         ligne_auj = rame_to_line[rame]
         ligne_demain = next_line.get(ligne_auj, ligne_auj)
         ligne_hier = prev_line.get(ligne_auj, ligne_auj)
+
+        axes = sous_df["axe"].dropna().unique()
+        axe_label = " / ".join(axes) if len(axes) > 0 else "axe inconnu"
+
         texte_roulement = f"{ligne_hier} ➜ {ligne_auj} ➜ {ligne_demain}"
-        # --------------------------------------------------------------------
+        # -------------------------------------
 
         # Cadre
         c.setStrokeColor(colors.HexColor("#3A7ECB"))
@@ -541,10 +551,13 @@ def draw_pdf_for_assignments(df_assign, json_file):
             fill=0,
         )
 
-        # Titre rame (roulement)
+        # Titre rame (roulement + axe)
         c.setFont("Helvetica-Bold", 5)
         c.setFillColor(colors.magenta)
         c.drawString(LEFT_MARGIN + 6, cadre_top - 12, texte_roulement)
+        c.setFillColor(colors.green)
+        c.drawString(LEFT_MARGIN + 30, cadre_bottom + 4, axe_label)
+
 
         # Km total
         total_rame_km = df_km_par_rame.loc[
@@ -700,7 +713,7 @@ def draw_pdf_for_assignments(df_assign, json_file):
         rame_counter += 1
 
     # Page récap paramètres
-    draw_params_page(c, json_file)
+    draw_params_page(c, f"Matériel {materiel_code}")
 
     c.save()
     print(f"PDF généré : {nom_pdf}")
@@ -716,6 +729,8 @@ def process_and_generate():
         print(f"⚠️ Dossier {DOSSIER_JSON} introuvable.")
         return
 
+    all_assignments = []
+
     for fichier_json in sorted(os.listdir(DOSSIER_JSON)):
         if not fichier_json.endswith(".json"):
             continue
@@ -728,11 +743,17 @@ def process_and_generate():
                 print(f"❌ Impossible de lire {chemin_json}: {e}")
                 continue
 
+        # Axe ferroviaire à partir du nom du fichier
+        base = os.path.splitext(fichier_json)[0]
+        if base.startswith("marches_"):
+            base = base[len("marches_"):]
+        axe_label = base.replace("-", " – ")
+
         df = pd.DataFrame(data).sort_values("depart").reset_index(drop=True)
         rame_state = {}
         assignments = []
 
-        # Affectation automatique
+        # Affectation automatique pour CE fichier
         for _, train in df.iterrows():
             gare_dep = train["gare_depart"]
             depart = train["depart"]
@@ -768,28 +789,34 @@ def process_and_generate():
             rame_state[candidate]["gare"] = train["gare_arrivee"]
             rame_state[candidate]["dispo"] = train["arrivee"]
 
-        # Navette soir
+        # Navette soir pour ce fichier
         for rame_id, state in rame_state.items():
             soir = navette_soir(rame_id, state["gare"], state["dispo"])
             if soir:
                 assignments.append(soir)
 
-        df_assign = pd.DataFrame(assignments)
-        if df_assign.empty:
+        # Ajout de l'axe à toutes les marches de ce fichier
+        for a in assignments:
+            a["axe"] = axe_label
+
+        if not assignments:
             print(f"{fichier_json} -> aucun assignment généré.")
             continue
 
-        df_assign["vide_voyageur"] = df_assign["vide_voyageur"].fillna(False)
+        df_assign_file = pd.DataFrame(assignments)
+        df_assign_file["vide_voyageur"] = df_assign_file["vide_voyageur"].fillna(False)
 
-        # distances
-        df_assign["distance_km"] = df_assign.apply(get_distance_safe, axis=1)
+        # distances pour ce fichier (utile si on veut analyser par axe)
+        df_assign_file["distance_km"] = df_assign_file.apply(get_distance_safe, axis=1)
 
-        # équilibre flux (console)
+        all_assignments.extend(assignments)
+
+        # équilibre flux (console) PAR FICHIER / AXE
         premiers_depart = (
-            df_assign.sort_values("depart").groupby("rame").first()
+            df_assign_file.sort_values("depart").groupby("rame").first()
         )
         dernieres_arrivee = (
-            df_assign.sort_values("arrivee").groupby("rame").last()
+            df_assign_file.sort_values("arrivee").groupby("rame").last()
         )
         depart_counts = (
             premiers_depart["gare_depart"].value_counts().rename("Departs")
@@ -806,14 +833,14 @@ def process_and_generate():
             flux_balance["Arrivees"] - flux_balance["Departs"]
         )
 
-        print(f"{fichier_json}")
+        print(f"{fichier_json} (axe : {axe_label})")
         print("--- Vérification équilibre par gare (Arrivées - Départs) ---")
         print(flux_balance)
         print("\n")
 
-        # PPHPD (console)
-        df_pphpd = calcul_pphpd_par_direction(df_assign, parc)
-        print("--- PPHPD par heure et direction ---")
+        # PPHPD (console) par axe
+        df_pphpd = calcul_pphpd_par_direction(df_assign_file, parc)
+        print("--- PPHPD par heure et direction (axe) ---")
         if not df_pphpd.empty:
             print(
                 df_pphpd.pivot(
@@ -822,8 +849,22 @@ def process_and_generate():
             )
         print("\n")
 
-        # Génération PDF
-        draw_pdf_for_assignments(df_assign, fichier_json)
+    # Après avoir traité TOUS les fichiers : on génère les PDF par matériel
+    if not all_assignments:
+        print("Aucun assignment global généré.")
+        return
+
+    df_assign_global = pd.DataFrame(all_assignments)
+    df_assign_global["vide_voyageur"] = df_assign_global["vide_voyageur"].fillna(False)
+    df_assign_global["distance_km"] = df_assign_global.apply(get_distance_safe, axis=1)
+    df_assign_global["materiel"] = df_assign_global["rame"].apply(get_materiel_code_from_rame)
+
+    # Un PDF par matériel
+    for code in parc.keys():
+        df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
+        if df_mat.empty:
+            continue
+        draw_pdf_for_material(df_mat, code)
 
 
 if __name__ == "__main__":
