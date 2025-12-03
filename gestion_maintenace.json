@@ -1,0 +1,68 @@
+{
+  "BGC": {
+    "type": "BGC",
+
+    "max_slots_per_day": 1,
+
+    "slots": [
+      {
+        "duration_minutes": 480,
+        "window": [14.0,22.0],
+        "location": "MBC"
+      },
+      {
+        "duration_minutes": 120,
+        "window": [11, 13],
+        "location": "MBC"
+      },
+      {
+        "duration_minutes": 120,
+        "window": [13,15],
+        "location": "MBC"
+      }
+    ]
+  },
+
+  "2NPG": {
+    "type": "2NPG",
+
+    "max_slots_per_day": 2,
+
+    "slots": [
+      {
+        "duration_minutes": 45,
+        "window": [0.5, 4.0],
+        "location": "BRG"
+      },
+      {
+        "duration_minutes": 30,
+        "window": [10.0, 15.0],
+        "location": "BRG"
+      }
+    ]
+  },
+
+  "REG": {
+    "type": "Regiolis",
+    "max_slots_per_day": 1,
+    "slots": [
+      {
+        "duration_minutes": 40,
+        "window": [1.0, 5.0],
+        "location": "AVL"
+      }
+    ]
+  },
+
+  "R2N": {
+    "type": "Regio2n",
+    "max_slots_per_day": 1,
+    "slots": [
+      {
+        "duration_minutes": 30,
+        "window": [2.0, 6.0],
+        "location": "LYG"
+      }
+    ]
+  }
+}

@@ -2,6 +2,8 @@
 import json
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
+import tempfile
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -16,26 +18,34 @@ m_st_chrls = "MSC"
 navette_time = 0.083
 tampon = 0.333
 tampon_15m = 0.25
-temps_minimal = 0.20
+temps_minimal = 0.21
 seuil_atelier = 1.25
 
 # Parc de rames
 parc = {
-    "C":    {"modele": "Corail",   "numero": 22201, "quantite": 3,  "utilise": 0, "places": 704},
-    "BGC":  {"modele": "BGC",      "numero": 81501, "quantite": 27, "utilise": 0, "places": 200},
-    "REG":  {"modele": "Regiolis", "numero": 84501, "quantite": 15, "utilise": 0, "places": 220},
-    "2NPG": {"modele": "2NPG",     "numero": 23501, "quantite": 30, "utilise": 0, "places": 210},
+    "R2N":    {"modele": "Regio2n",   "numero": 22201, "quantite": 10,  "utilise": 0, "places": 505},
+    "BGC":    {"modele": "BGC",       "numero": 81501, "quantite": 27,  "utilise": 0, "places": 200},
+    "REG":    {"modele": "Regiolis",  "numero": 84501, "quantite": 15,  "utilise": 0, "places": 220},
+    "2NPG":   {"modele": "2NPG",      "numero": 23501, "quantite": 30,  "utilise": 0, "places": 210},
 }
+
+# Stockage de l’équilibre des flux par axe (pour affichage dans les PDF matériels)
+# FLUX_PAR_AXE[axe_label] = {"fichier": ..., "flux": df, "materiels": [codes]}
+FLUX_PAR_AXE = {}
 
 # ------------------ Fonctions d'affectation ------------------
 def get_rame_id(nom_ligne: str):
     """Retourne un ID de rame en fonction du fichier de marches."""
     if nom_ligne == "marches_intervilles-marseille-lyon.json":
-        key = "C"
+        key = "R2N"
     elif nom_ligne == "marches_marseille-toulon-hyeres-les-arcs-draguignan.json":
         key = "2NPG"
     elif nom_ligne == "marches_marseille-avignon.json":
         key = "2NPG"
+    elif nom_ligne == "marches_vallee-du-rhone.json":
+        key = "R2N"
+    elif nom_ligne == "marches_marseille-miramas-via-cote-bleue.json":
+        key = "REG"
     else:
         key = "BGC" if parc["BGC"]["utilise"] < parc["BGC"]["quantite"] else "REG"
 
@@ -159,37 +169,50 @@ def gestion_evo(rame_id, gare_dep, depart, state, assignments):
 
 # ------------------ Calcul PPHPD ------------------
 def calcul_pphpd_par_direction(df_assign, parc):
+    """
+    PPHPD avec règle :
+      - avant 12h = basé sur l'heure d'arrivée
+      - après 12h = basé sur l'heure de départ
+    """
     resultats = []
 
     if df_assign.empty:
         return pd.DataFrame(resultats)
 
-    hmin = int(df_assign["depart"].min())
-    hmax = int(df_assign["arrivee"].max()) + 1
+    # heure de référence PPHPD
+    df_assign = df_assign.copy()
+    df_assign["heure_pphpd"] = df_assign.apply(
+        lambda r: r["arrivee"] if r["arrivee"] < 12 else r["depart"],
+        axis=1
+    )
+
+    hmin = int(df_assign["heure_pphpd"].min())
+    hmax = int(df_assign["heure_pphpd"].max()) + 1
 
     for h in range(hmin, hmax):
         tranche = df_assign[
-            (df_assign["depart"] >= h)
-            & (df_assign["depart"] < h + 1)
+            (df_assign["heure_pphpd"] >= h)
+            & (df_assign["heure_pphpd"] < h + 1)
             & (~df_assign["vide_voyageur"])
         ]
 
         for direction in ["Paris", "Province"]:
             capacite_totale = 0
+
             for _, row in tranche.iterrows():
                 try:
                     num = int(row["marche"])
                 except Exception:
                     continue
 
+                # Direction via numéro pair/impair
                 if (num % 2 == 0 and direction == "Paris") or (
                     num % 2 == 1 and direction == "Province"
                 ):
+
                     rame = row["rame"]
                     for key, info in parc.items():
-                        if (
-                            info["numero"] <= rame < info["numero"] + info["quantite"]
-                        ) and not row["vide_voyageur"]:
+                        if info["numero"] <= rame < info["numero"] + info["quantite"]:
                             capacite_totale += info["places"]
                             break
 
@@ -307,13 +330,23 @@ def get_distance_safe(row):
         return 0
 
 
+def get_materiel_code_from_rame(rame_id):
+    """Retourne le code matériel (R2N / BGC / REG / 2NPG) à partir d'un numéro de rame."""
+    for code, info in parc.items():
+        if info["numero"] <= rame_id < info["numero"] + info["quantite"]:
+            return code
+    return None
+
+
 # ------------------ Page paramètres ------------------
-def draw_params_page(c, json_file):
-    """Ajoute une page récap avec les paramètres de l'algo d'attribution."""
+def draw_params_page(c, materiel_code, titre_suffix):
+    """Ajoute une page récap avec les paramètres de l'algo d'attribution + flux pour ce matériel."""
+    global FLUX_PAR_AXE
+
     c.showPage()
 
     # Titre de la page
-    titre = f"Paramètres de l'attribution – {os.path.splitext(os.path.basename(json_file))[0]}"
+    titre = f"Paramètres de l'attribution – {titre_suffix}"
     c.setFont("Helvetica-Bold", 14)
     c.setFillColor(colors.black)
     c.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 40, titre)
@@ -392,30 +425,137 @@ def draw_params_page(c, json_file):
 
     c.setFont("Helvetica", 9)
     for code, info in parc.items():
-        txt = (f"• {code} – {info['modele']}: "
-               f"{info['quantite']} rames (numéros {info['numero']} à {info['numero'] + info['quantite'] - 1}), "
-               f"{info['places']} places par rame")
-        c.drawString(LEFT_MARGIN, y, txt)
+        txt_line = (f"• {code} – {info['modele']}: "
+                    f"{info['quantite']} rames (numéros {info['numero']} à {info['numero'] + info['quantite'] - 1}), "
+                    f"{info['places']} places par rame")
+        c.drawString(LEFT_MARGIN, y, txt_line)
         y -= line_height
-        if y < BOTTOM_MARGIN + 40:
+        if y < BOTTOM_MARGIN + 80:
             c.showPage()
             y = PAGE_HEIGHT - TOP_MARGIN
 
+    # --- Équilibre des flux par axe (tableaux) POUR CE MATERIEL ---
+    y -= line_height // 2
+    if y < BOTTOM_MARGIN + 80:
+        c.showPage()
+        y = PAGE_HEIGHT - TOP_MARGIN
 
-# ------------------ Génération PDF à partir des assignments ------------------
-def draw_pdf_for_assignments(df_assign, json_file):
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(LEFT_MARGIN, y, "Équilibre des flux par axe (Arrivées - Départs)")
+    y -= line_height
+
+    col_gare_x = LEFT_MARGIN
+    col_dep_x = LEFT_MARGIN + 80
+    col_arr_x = LEFT_MARGIN + 150
+    col_diff_x = LEFT_MARGIN + 230
+    row_h = 12
+
+    for axe_label, info in FLUX_PAR_AXE.items():
+        flux_df = info.get("flux")
+        fichier = info.get("fichier", "")
+        materiels = info.get("materiels", [])
+
+        # Ne montrer que les axes où ce matériel est engagé
+        if materiel_code not in materiels:
+            continue
+
+        if flux_df is None or flux_df.empty:
+            continue
+
+        if y < BOTTOM_MARGIN + 60:
+            c.showPage()
+            y = PAGE_HEIGHT - TOP_MARGIN
+            c.setFont("Helvetica-Bold", 10)
+            c.drawString(LEFT_MARGIN, y, "Équilibre des flux par axe (Arrivées - Départs)")
+            y -= line_height
+
+        # Titre de l'axe
+        c.setFont("Helvetica-Bold", 9)
+        titre_axe = f"{fichier} (axe : {axe_label})"
+        c.drawString(LEFT_MARGIN, y, titre_axe)
+        y -= row_h
+
+        # En-têtes du tableau
+        c.setFont("Helvetica-Bold", 8)
+        c.drawString(col_gare_x, y, "Gare")
+        c.drawString(col_dep_x,  y, "Départs")
+        c.drawString(col_arr_x,  y, "Arrivées")
+        c.drawString(col_diff_x, y, "Diff (Arr-Dep)")
+        y -= row_h
+
+        # Contenu du tableau
+        c.setFont("Helvetica", 8)
+        for _, row in flux_df.iterrows():
+            if y < BOTTOM_MARGIN + 40:
+                c.showPage()
+                y = PAGE_HEIGHT - TOP_MARGIN
+                c.setFont("Helvetica-Bold", 8)
+                c.drawString(col_gare_x, y, "Gare")
+                c.drawString(col_dep_x,  y, "Départs")
+                c.drawString(col_arr_x,  y, "Arrivées")
+                c.drawString(col_diff_x, y, "Diff (Arr-Dep)")
+                y -= row_h
+                c.setFont("Helvetica", 8)
+
+            # la gare est dans la première colonne après reset_index()
+            gare = str(row.iloc[0])
+
+            dep = int(row.get("Departs", 0))
+            arr = int(row.get("Arrivees", 0))
+            diff = int(row.get("Diff (Arr - Dep)", 0))
+
+            c.drawString(col_gare_x, y, gare)
+            c.drawRightString(col_dep_x + 30,  y, str(dep))
+            c.drawRightString(col_arr_x + 30,  y, str(arr))
+            c.drawRightString(col_diff_x + 40, y, str(diff))
+            y -= row_h
+
+        y -= row_h  # espace entre axes
+
+
+# ------------------ PDF par matériel ------------------
+def draw_pdf_for_material(df_assign_mat, materiel_code):
     """
-    Génére un PDF pour un fichier de marches :
-    - un cadre par rame
-    - affichage de la ligne de roulement (hier -> aujourd'hui -> demain)
-      avec compatibilité gare fin / gare début pour le lendemain.
+    Génère un PDF pour un type de matériel donné (R2N, BGC, REG, 2NPG).
     """
-    rame_list = sorted(df_assign["rame"].unique())
-    nom_pdf = os.path.splitext(os.path.basename(json_file))[0] + ".pdf"
+    if df_assign_mat.empty:
+        return
+
+    # --- Liste complète des rames du matériel (utilisées + inutilisées) ---
+    info = parc[materiel_code]
+    premier = info["numero"]
+    dernier = info["numero"] + info["quantite"] - 1
+    all_rames = list(range(premier, dernier + 1))
+
+    rames_utilisees = sorted(df_assign_mat["rame"].unique())
+    rames_inutilisees = [r for r in all_rames if r not in rames_utilisees]
+
+    # Ajouter les lignes vides dans df_assign_mat
+    liste_lignes_vides = []
+    for rame in rames_inutilisees:
+        liste_lignes_vides.append({
+            "rame": rame,
+            "marche": "",
+            "gare_depart": "",
+            "depart": HEURE_MIN,
+            "gare_arrivee": "",
+            "arrivee": HEURE_MIN,
+            "vide_voyageur": False,
+            "distance_km": 0,
+            "axe": "Non utilisée"
+        })
+
+    if liste_lignes_vides:
+        df_assign_mat = pd.concat([df_assign_mat, pd.DataFrame(liste_lignes_vides)], ignore_index=True)
+
+    # Désormais on dessine TOUTES les rames (utilisées + inutilisées)
+    rame_list = sorted(df_assign_mat["rame"].unique())
+
+    nom_pdf = f"roulements_{materiel_code}.pdf"
     c = canvas.Canvas(nom_pdf, pagesize=A4)
 
     # ------- Titre du document PDF -------
-    titre = os.path.splitext(os.path.basename(json_file))[0]
+    titre = f"Roulements – {materiel_code}"
     c.setFont("Helvetica-Bold", 14)
     c.setFillColor(colors.black)
     c.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 20, titre)
@@ -423,27 +563,27 @@ def draw_pdf_for_assignments(df_assign, json_file):
 
     # km par rame
     df_km_par_rame = (
-        df_assign[~df_assign["vide_voyageur"]]
+        df_assign_mat[~df_assign_mat["vide_voyageur"]]
         .groupby("rame")["distance_km"]
         .sum()
         .reset_index()
     )
 
     # --- Début / fin de journée pour chaque rame ---
-    df_sorted_dep = df_assign.sort_values("depart")
+    df_sorted_dep = df_assign_mat.sort_values("depart")
     firsts = df_sorted_dep.groupby("rame").first()
 
-    df_sorted_arr = df_assign.sort_values("arrivee")
+    df_sorted_arr = df_assign_mat.sort_values("arrivee")
     lasts = df_sorted_arr.groupby("rame").last()
 
-    start_station = firsts["gare_depart"].to_dict()  # rame -> gare départ du jour
-    end_station   = lasts["gare_arrivee"].to_dict()  # rame -> gare arrivée du jour
+    start_station = firsts["gare_depart"].to_dict()
+    end_station   = lasts["gare_arrivee"].to_dict()
 
-    # Numérotation de 1..N pour les lignes de roulement
+    # Numérotation lignes de roulement 1..N sur ce matériel
     nb_rames = len(rame_list)
     rame_to_line = {rame: idx + 1 for idx, rame in enumerate(rame_list)}
 
-    # --- Compatibilités : quelle ligne peut suivre laquelle ? ---
+    # --- Compatibilités ligne_auj -> ligne_demain (même gare fin/début) ---
     compatible = {i + 1: [] for i in range(nb_rames)}
 
     for i, rame_i in enumerate(rame_list):
@@ -455,16 +595,13 @@ def draw_pdf_for_assignments(df_assign, json_file):
             if end_i is not None and start_station.get(rame_j) == end_i and li != lj:
                 compatible[li].append(lj)
 
-        # Si aucune compatibilité trouvée, on autorise au moins la boucle sur soi-même
         if not compatible[li]:
             compatible[li].append(li)
 
-    # --- Matching biparti ligne_auj -> ligne_demain ---
-    next_line = {}   # ligne_auj -> ligne_demain
-    matchR = {}      # ligne_demain -> ligne_auj
+    next_line = {}
+    matchR = {}
 
     def dfs_match(i, seen):
-        """Tentative d'affecter la ligne i à une ligne de demain compatible."""
         for j in compatible[i]:
             if j in seen:
                 continue
@@ -488,8 +625,8 @@ def draw_pdf_for_assignments(df_assign, json_file):
     for i, j in next_line.items():
         prev_line[j] = i
 
-    # --- Performance : temps en marche voyageur dans la fenêtre [5h30, 22h30] ---
-    df_voy = df_assign[~df_assign["vide_voyageur"]].copy()
+    # --- Performance : temps en marche voyageur dans la fenêtre ---
+    df_voy = df_assign_mat[~df_assign_mat["vide_voyageur"]].copy()
 
     if not df_voy.empty:
         df_voy["depart_clip"] = df_voy["depart"].clip(lower=WINDOW_START, upper=WINDOW_END)
@@ -517,17 +654,21 @@ def draw_pdf_for_assignments(df_assign, json_file):
             y_start = PAGE_HEIGHT - TOP_MARGIN
             rame_counter = 0
 
-        sous_df = df_assign[df_assign["rame"] == rame].sort_values("depart")
+        sous_df = df_assign_mat[df_assign_mat["rame"] == rame].sort_values("depart")
 
         cadre_top = y_start
         cadre_bottom = y_start - RAME_HEIGHT
 
-        # ---- Numéro de ligne de roulement (hier / aujourd'hui / demain) ----
+        # ---- Roulement + axe ferroviaire ----
         ligne_auj = rame_to_line[rame]
         ligne_demain = next_line.get(ligne_auj, ligne_auj)
         ligne_hier = prev_line.get(ligne_auj, ligne_auj)
+
+        axes = sous_df["axe"].dropna().unique()
+        axe_label = " / ".join(axes) if len(axes) > 0 else "axe inconnu"
+
         texte_roulement = f"{ligne_hier} ➜ {ligne_auj} ➜ {ligne_demain}"
-        # --------------------------------------------------------------------
+        # -------------------------------------
 
         # Cadre
         c.setStrokeColor(colors.HexColor("#3A7ECB"))
@@ -541,10 +682,12 @@ def draw_pdf_for_assignments(df_assign, json_file):
             fill=0,
         )
 
-        # Titre rame (roulement)
+        # Titre rame (roulement + axe)
         c.setFont("Helvetica-Bold", 5)
         c.setFillColor(colors.magenta)
         c.drawString(LEFT_MARGIN + 6, cadre_top - 12, texte_roulement)
+        c.setFillColor(colors.green)
+        c.drawString(LEFT_MARGIN + 30, cadre_bottom + 4, axe_label)
 
         # Km total
         total_rame_km = df_km_par_rame.loc[
@@ -699,8 +842,8 @@ def draw_pdf_for_assignments(df_assign, json_file):
         y_start -= (RAME_HEIGHT + ESPACEMENT_RAME)
         rame_counter += 1
 
-    # Page récap paramètres
-    draw_params_page(c, json_file)
+    # Page récap paramètres + flux filtrés sur ce matériel
+    draw_params_page(c, materiel_code, f"Matériel {materiel_code}")
 
     c.save()
     print(f"PDF généré : {nom_pdf}")
@@ -708,6 +851,9 @@ def draw_pdf_for_assignments(df_assign, json_file):
 
 # ------------------ Boucle principale ------------------
 def process_and_generate():
+    global FLUX_PAR_AXE
+    FLUX_PAR_AXE = {}
+
     # reset parc
     for k in parc:
         parc[k]["utilise"] = 0
@@ -715,6 +861,9 @@ def process_and_generate():
     if not os.path.exists(DOSSIER_JSON):
         print(f"⚠️ Dossier {DOSSIER_JSON} introuvable.")
         return
+
+    all_assignments = []
+    pphpd_par_axe = {}
 
     for fichier_json in sorted(os.listdir(DOSSIER_JSON)):
         if not fichier_json.endswith(".json"):
@@ -728,11 +877,17 @@ def process_and_generate():
                 print(f"❌ Impossible de lire {chemin_json}: {e}")
                 continue
 
+        # Axe ferroviaire à partir du nom du fichier
+        base = os.path.splitext(fichier_json)[0]
+        if base.startswith("marches_"):
+            base = base[len("marches_"):]
+        axe_label = base.replace("-", " – ")
+
         df = pd.DataFrame(data).sort_values("depart").reset_index(drop=True)
         rame_state = {}
         assignments = []
 
-        # Affectation automatique
+        # Affectation automatique pour CE fichier
         for _, train in df.iterrows():
             gare_dep = train["gare_depart"]
             depart = train["depart"]
@@ -768,28 +923,38 @@ def process_and_generate():
             rame_state[candidate]["gare"] = train["gare_arrivee"]
             rame_state[candidate]["dispo"] = train["arrivee"]
 
-        # Navette soir
+        # Navette soir pour ce fichier
         for rame_id, state in rame_state.items():
             soir = navette_soir(rame_id, state["gare"], state["dispo"])
             if soir:
                 assignments.append(soir)
 
-        df_assign = pd.DataFrame(assignments)
-        if df_assign.empty:
+        # Ajout de l'axe à toutes les marches de ce fichier
+        for a in assignments:
+            a["axe"] = axe_label
+
+        if not assignments:
             print(f"{fichier_json} -> aucun assignment généré.")
             continue
 
-        df_assign["vide_voyageur"] = df_assign["vide_voyageur"].fillna(False)
+        df_assign_file = pd.DataFrame(assignments)
+        df_assign_file["vide_voyageur"] = df_assign_file["vide_voyageur"].astype("boolean").fillna(False)
 
-        # distances
-        df_assign["distance_km"] = df_assign.apply(get_distance_safe, axis=1)
+        # distances pour ce fichier (utile si on veut analyser par axe)
+        df_assign_file["distance_km"] = df_assign_file.apply(get_distance_safe, axis=1)
 
-        # équilibre flux (console)
+        # materiels réellement engagés sur cet axe
+        df_assign_file["materiel"] = df_assign_file["rame"].apply(get_materiel_code_from_rame)
+        materiels_axe = sorted(df_assign_file["materiel"].dropna().unique().tolist())
+
+        all_assignments.extend(assignments)
+
+        # équilibre flux (console) PAR FICHIER / AXE
         premiers_depart = (
-            df_assign.sort_values("depart").groupby("rame").first()
+            df_assign_file.sort_values("depart").groupby("rame").first()
         )
         dernieres_arrivee = (
-            df_assign.sort_values("arrivee").groupby("rame").last()
+            df_assign_file.sort_values("arrivee").groupby("rame").last()
         )
         depart_counts = (
             premiers_depart["gare_depart"].value_counts().rename("Departs")
@@ -806,24 +971,140 @@ def process_and_generate():
             flux_balance["Arrivees"] - flux_balance["Departs"]
         )
 
-        print(f"{fichier_json}")
+        # Sauvegarde de l'équilibre des flux pour les PDF matériels,
+        # avec la liste des matériels engagés sur l'axe
+        FLUX_PAR_AXE[axe_label] = {
+            "fichier": fichier_json,
+            "flux": flux_balance.reset_index(),
+            "materiels": materiels_axe,
+        }
+
+        # Calcul PPHPD par axe (pour le PDF global)
+        df_pphpd = calcul_pphpd_par_direction(df_assign_file, parc)
+        pphpd_par_axe[axe_label] = df_pphpd
+
+        print(f"{fichier_json} (axe : {axe_label})")
         print("--- Vérification équilibre par gare (Arrivées - Départs) ---")
         print(flux_balance)
         print("\n")
 
-        # PPHPD (console)
-        df_pphpd = calcul_pphpd_par_direction(df_assign, parc)
-        print("--- PPHPD par heure et direction ---")
-        if not df_pphpd.empty:
-            print(
-                df_pphpd.pivot(
-                    index="heure", columns="direction", values="pphpd"
-                ).fillna(0)
-            )
-        print("\n")
+    # Après avoir traité TOUS les fichiers : on génère les PDF
+    if not all_assignments:
+        print("Aucun assignment global généré.")
+        return
 
-        # Génération PDF
-        draw_pdf_for_assignments(df_assign, fichier_json)
+    df_assign_global = pd.DataFrame(all_assignments)
+    df_assign_global["vide_voyageur"] = df_assign_global["vide_voyageur"].astype("boolean").fillna(False)
+    df_assign_global["distance_km"] = df_assign_global.apply(get_distance_safe, axis=1)
+    df_assign_global["materiel"] = df_assign_global["rame"].apply(get_materiel_code_from_rame)
+
+    # PDF PPHPD global
+    generate_pphpd_global(pphpd_par_axe)
+
+    # Un PDF par matériel
+    for code in parc.keys():
+        df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
+        if df_mat.empty:
+            continue
+        draw_pdf_for_material(df_mat, code)
+
+
+def generate_pphpd_global(pphpd_par_axe):
+    from reportlab.lib.utils import ImageReader
+
+    PAGE_WIDTH, PAGE_HEIGHT = A4
+    nom_pdf = "PPHPD_global.pdf"
+
+    c = canvas.Canvas(nom_pdf, pagesize=A4)
+    # ========= PAGE 1 : TITRE + TEXTE TECHNIQUE =========
+    c.setFont("Helvetica-Bold", 20)
+    c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 40, "PPHPD – Global")
+
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(40, PAGE_HEIGHT - 90, "Méthode de calcul du PPHPD")
+
+    c.setFont("Helvetica", 10)
+    text = [
+        "Le PPHPD (Place Par Heure et par Direction) permet d’estimer la",
+        "capacité théorique maximale offerte par l’exploitation, heure par heure.",
+        "",
+        "Règles appliquées :",
+        " • Avant 12h : le PPHPD est calculé à partir de l’heure d’arrivée des trains.",
+        " • Après 12h : le PPHPD est calculé à partir de l’heure de départ.",
+        " • Les marches vides voyageurs (HLP, navettes, évolutions) sont exclues.",
+        " • La direction est déterminée par le numéro de marche :",
+        "      - Numéro pair   → direction Paris",
+        "      - Numéro impair → direction Province",
+    ]
+
+    y = PAGE_HEIGHT - 120
+    for line in text:
+        c.drawString(40, y, line)
+        y -= 14
+
+    c.showPage()
+    # ========= FIN PAGE INTRO =========
+
+    # Mise en page : 2 graphiques par page
+    graphs_per_page = 0
+    current_y = PAGE_HEIGHT - 80
+    graph_height = 200
+    left_margin = 40
+    right_margin = 40
+
+    for axe, df in pphpd_par_axe.items():
+        if df.empty:
+            continue
+
+        dfp = df.pivot(index="heure", columns="direction", values="pphpd").fillna(0)
+
+        # Génération du graphe
+        plt.figure(figsize=(8, 3))
+        for col in dfp.columns:
+            plt.plot(dfp.index, dfp[col], marker="o", label=col)
+        plt.title(f"PPHPD – {axe}")
+        plt.grid(True)
+        plt.legend()
+
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+        plt.savefig(tmp.name, dpi=150, bbox_inches='tight')
+        plt.close()
+
+        # Nouvelle page si on a déjà 2 graphiques sur la page
+        if graphs_per_page >= 2:
+            c.showPage()
+            graphs_per_page = 0
+            current_y = PAGE_HEIGHT - 80
+
+        img = ImageReader(tmp.name)
+
+        # Titre de l'axe
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(left_margin, current_y, f"Axe : {axe}")
+
+        # Positionnement de l'image juste en dessous
+        img_top = current_y - 20
+        img_width = PAGE_WIDTH - left_margin - right_margin
+        img_height = graph_height
+        c.drawImage(
+            img,
+            left_margin,
+            img_top - img_height,
+            width=img_width,
+            height=img_height,
+            preserveAspectRatio=True,
+        )
+
+        graphs_per_page += 1
+        current_y = img_top - img_height - 40  # espace avant le prochain graphe
+
+        try:
+            os.unlink(tmp.name)
+        except PermissionError:
+            pass
+
+    c.save()
+    print(f"PDF global PPHPD généré : {nom_pdf}")
 
 
 if __name__ == "__main__":

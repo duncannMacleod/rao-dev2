@@ -68,5 +68,60 @@
         "origine":"MSC",
         "destination":"MBC",
         "distance":2
+    }, 
+    {
+        "origine":"TLN",
+        "destination":"MSC",
+        "distance":67
+    }, 
+    {
+        "origine":"LAC",
+        "destination":"MSC",
+        "distance":135
+    }, 
+    {
+        "origine":"HYE",
+        "destination":"MSC",
+        "distance":87
+    }, 
+    {
+        "origine":"AVI",
+        "destination":"MSC",
+        "distance":104
+    }, 
+    {
+        "origine":"AVV",
+        "destination":"MSC",
+        "distance":107
+    }, 
+    {
+        "origine":"CVN",
+        "destination":"MSC",
+        "distance":71
+    }, 
+    {
+        "origine":"MAS",
+        "destination":"AVV",
+        "distance":73
+    }, 
+    {
+        "origine":"MAS",
+        "destination":"MSC",
+        "distance":53
+    }, 
+    {
+        "origine":"AVI",
+        "destination":"MAC",
+        "distance":298
+    }, 
+    {
+        "origine":"AVI",
+        "destination":"LYD",
+        "distance":236
+    }, 
+    {
+        "origine":"AVI",
+        "destination":"LPR",
+        "distance":235
     }
 ]
