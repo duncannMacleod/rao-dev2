@@ -29,9 +29,19 @@ parc = {
     "2NPG":   {"modele": "2NPG",      "numero": 23501, "quantite": 30,  "utilise": 0, "places": 210},
 }
 
+# Gare où les rames sont affectés en dépôt
+DEPOT_AFFECTATION = {
+    "R2N": "AVG",
+    "BGC": "AVG",
+    "REG": "MBC",
+    "2NPG": "MBC",
+}
+
+
 # Stockage de l’équilibre des flux par axe (pour affichage dans les PDF matériels)
 # FLUX_PAR_AXE[axe_label] = {"fichier": ..., "flux": df, "materiels": [codes]}
 FLUX_PAR_AXE = {}
+
 
 # ------------------ Fonctions d'affectation ------------------
 def get_rame_id(nom_ligne: str):
@@ -79,7 +89,7 @@ def navette_mat(rame_id, gare_dep, depart, tampon, navette_time):
     info = navette_dict[gare_dep]
     return {
         "rame": rame_id,
-        "marche": f"navette_mat_{rame_id}",
+        "marche": f"EVM{depart}{gare_dep}",
         "gare_depart": info["gare_depart"],
         "depart": depart - tampon - navette_time,
         "gare_arrivee": info["gare_arrivee"],
@@ -108,7 +118,7 @@ def navette_soir(rame_id, gare_dep, dispo):
         return None
     return {
         "rame": rame_id,
-        "marche": f"navette_soir_{rame_id}",
+        "marche": f"EVS{dispo}",
         "gare_depart": gare_dep,
         "depart": dispo + tampon_15m,
         "gare_arrivee": mapping[gare_dep],
@@ -142,7 +152,7 @@ def gestion_evo(rame_id, gare_dep, depart, state, assignments):
     assignments.append(
         {
             "rame": rame_id,
-            "marche": f"evo_in_{rame_id}",
+            "marche": f"EVI{rame_id}",
             "gare_depart": gare_dep,
             "depart": state["dispo"] + tampon_15m,
             "gare_arrivee": gare_navette,
@@ -154,7 +164,7 @@ def gestion_evo(rame_id, gare_dep, depart, state, assignments):
     assignments.append(
         {
             "rame": rame_id,
-            "marche": f"evo_out_{rame_id}",
+            "marche": f"EVO{rame_id}",
             "gare_depart": gare_navette,
             "depart": depart - navette_time - tampon_15m,
             "gare_arrivee": gare_dep,
@@ -530,38 +540,40 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
     rames_utilisees = sorted(df_assign_mat["rame"].unique())
     rames_inutilisees = [r for r in all_rames if r not in rames_utilisees]
 
-    # Ajouter les lignes vides dans df_assign_mat
-    liste_lignes_vides = []
+    # Ajouter des lignes pour rames inutilisées
+    lignes_vides = []
     for rame in rames_inutilisees:
-        liste_lignes_vides.append({
+        gare_dodo = DEPOT_AFFECTATION.get(materiel_code, "MBC")
+        lignes_vides.append({
             "rame": rame,
-            "marche": "",
-            "gare_depart": "",
-            "depart": HEURE_MIN,
-            "gare_arrivee": "",
-            "arrivee": HEURE_MIN,
+            "marche": None,
+            "gare_depart": gare_dodo,
+            "depart": None,
+            "gare_arrivee": gare_dodo,
+            "arrivee": None,
             "vide_voyageur": False,
             "distance_km": 0,
-            "axe": "Non utilisée"
+            "axe": "Non utilisée",
+            "gare_dortoir": gare_dodo
         })
 
-    if liste_lignes_vides:
-        df_assign_mat = pd.concat([df_assign_mat, pd.DataFrame(liste_lignes_vides)], ignore_index=True)
+    if lignes_vides:
+        df_vides = pd.DataFrame(lignes_vides)
+        df_vides = df_vides.loc[:, ~(df_vides.isna().all())]  # évite warning pandas
+        df_assign_mat = pd.concat([df_assign_mat, df_vides], ignore_index=True)
 
-    # Désormais on dessine TOUTES les rames (utilisées + inutilisées)
+    # Rame list complète
     rame_list = sorted(df_assign_mat["rame"].unique())
 
     nom_pdf = f"roulements_{materiel_code}.pdf"
     c = canvas.Canvas(nom_pdf, pagesize=A4)
 
-    # ------- Titre du document PDF -------
+    # ------- Titre PDF -------
     titre = f"Roulements – {materiel_code}"
     c.setFont("Helvetica-Bold", 14)
-    c.setFillColor(colors.black)
     c.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 20, titre)
-    # -------------------------------------
 
-    # km par rame
+    # Km par rame
     df_km_par_rame = (
         df_assign_mat[~df_assign_mat["vide_voyageur"]]
         .groupby("rame")["distance_km"]
@@ -569,21 +581,20 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
         .reset_index()
     )
 
-    # --- Début / fin de journée pour chaque rame ---
+    # Début / fin de journée
     df_sorted_dep = df_assign_mat.sort_values("depart")
     firsts = df_sorted_dep.groupby("rame").first()
-
     df_sorted_arr = df_assign_mat.sort_values("arrivee")
     lasts = df_sorted_arr.groupby("rame").last()
 
     start_station = firsts["gare_depart"].to_dict()
-    end_station   = lasts["gare_arrivee"].to_dict()
+    end_station = lasts["gare_arrivee"].to_dict()
 
-    # Numérotation lignes de roulement 1..N sur ce matériel
+    # Numérotation lignes
     nb_rames = len(rame_list)
-    rame_to_line = {rame: idx + 1 for idx, rame in enumerate(rame_list)}
+    rame_to_line = {rame: i + 1 for i, rame in enumerate(rame_list)}
 
-    # --- Compatibilités ligne_auj -> ligne_demain (même gare fin/début) ---
+    # Compatibilités roulées
     compatible = {i + 1: [] for i in range(nb_rames)}
 
     for i, rame_i in enumerate(rame_list):
@@ -625,18 +636,14 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
     for i, j in next_line.items():
         prev_line[j] = i
 
-    # --- Performance : temps en marche voyageur dans la fenêtre ---
+    # Performance
     df_voy = df_assign_mat[~df_assign_mat["vide_voyageur"]].copy()
-
     if not df_voy.empty:
         df_voy["depart_clip"] = df_voy["depart"].clip(lower=WINDOW_START, upper=WINDOW_END)
         df_voy["arrivee_clip"] = df_voy["arrivee"].clip(lower=WINDOW_START, upper=WINDOW_END)
         df_voy["duree_fenetre"] = (df_voy["arrivee_clip"] - df_voy["depart_clip"]).clip(lower=0)
-
         df_perf_par_rame = (
-            df_voy.groupby("rame")["duree_fenetre"]
-            .sum()
-            .reset_index()
+            df_voy.groupby("rame")["duree_fenetre"].sum().reset_index()
         )
         df_perf_par_rame["taux_utilisation"] = (
             df_perf_par_rame["duree_fenetre"] / WINDOW_DURATION * 100.0
@@ -644,8 +651,16 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
     else:
         df_perf_par_rame = pd.DataFrame(columns=["rame", "duree_fenetre", "taux_utilisation"])
 
+    # Dessin des rames
     y_start = PAGE_HEIGHT - TOP_MARGIN
     rame_counter = 0
+    # ===== Détection des unités multiples (UM) =====
+    um_by_marche = (
+        df_assign_mat.groupby("marche")["rame"]
+        .apply(list)
+        .to_dict()
+    )
+    # ===============================================
 
     for rame in rame_list:
 
@@ -658,81 +673,95 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
 
         cadre_top = y_start
         cadre_bottom = y_start - RAME_HEIGHT
+        y_line = cadre_bottom + (RAME_HEIGHT / 2)
 
-        # ---- Roulement + axe ferroviaire ----
+        # ---- Roulement ----
         ligne_auj = rame_to_line[rame]
-        ligne_demain = next_line.get(ligne_auj, ligne_auj)
-        ligne_hier = prev_line.get(ligne_auj, ligne_auj)
+        ligne_demain = next_line[ligne_auj]
+        ligne_hier = prev_line[ligne_auj]
 
-        axes = sous_df["axe"].dropna().unique()
-        axe_label = " / ".join(axes) if len(axes) > 0 else "axe inconnu"
-
+        axe_label = " / ".join(sous_df["axe"].dropna().unique()) or "axe inconnu"
         texte_roulement = f"{ligne_hier} ➜ {ligne_auj} ➜ {ligne_demain}"
-        # -------------------------------------
 
         # Cadre
         c.setStrokeColor(colors.HexColor("#3A7ECB"))
-        c.setLineWidth(1.0)
-        c.rect(
-            LEFT_MARGIN,
-            cadre_bottom,
-            PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN,
-            RAME_HEIGHT,
-            stroke=1,
-            fill=0,
-        )
+        c.rect(LEFT_MARGIN, cadre_bottom,
+               PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN,
+               RAME_HEIGHT)
 
-        # Titre rame (roulement + axe)
+        # Titre rame + axe
         c.setFont("Helvetica-Bold", 5)
         c.setFillColor(colors.magenta)
         c.drawString(LEFT_MARGIN + 6, cadre_top - 12, texte_roulement)
         c.setFillColor(colors.green)
         c.drawString(LEFT_MARGIN + 30, cadre_bottom + 4, axe_label)
 
-        # Km total
-        total_rame_km = df_km_par_rame.loc[
-            df_km_par_rame["rame"] == rame, "distance_km"
-        ]
-        if not total_rame_km.empty:
-            total_rame_km = int(total_rame_km.values[0])
-            c.setFont("Helvetica-Bold", 5)
-            c.setFillColor(colors.blue)
-            c.drawString(LEFT_MARGIN + 6, cadre_bottom + 4, f"{total_rame_km} km")
-            c.setFillColor(colors.black)
-
-        # Indicateur de performance
-        perf_row = df_perf_par_rame.loc[df_perf_par_rame["rame"] == rame, "taux_utilisation"]
+        # Performance
+        perf_row = df_perf_par_rame.loc[df_perf_par_rame["rame"] == rame]
         if not perf_row.empty:
-            perf_val = perf_row.values[0]
-            txt_perf = f"Perf : {perf_val:.0f}%"
+            perf_val = perf_row["taux_utilisation"].values[0]
             c.setFont("Helvetica-Bold", 5)
             c.setFillColor(colors.green)
-            c.drawRightString(PAGE_WIDTH - RIGHT_MARGIN - 6, cadre_bottom + 4, txt_perf)
+            c.drawRightString(PAGE_WIDTH - RIGHT_MARGIN - 6,
+                              cadre_bottom + 4,
+                              f"Perf : {perf_val:.0f}%")
             c.setFillColor(colors.black)
 
+        # Km total
+        km_row = df_km_par_rame.loc[df_km_par_rame["rame"] == rame]
+        if not km_row.empty:
+            km_val = int(km_row["distance_km"].values[0])
+            c.setFont("Helvetica-Bold", 5)
+            c.setFillColor(colors.blue)
+            c.drawString(LEFT_MARGIN + 6, cadre_bottom + 4, f"{km_val} km")
+            c.setFillColor(colors.black)
+
+        # === RAME INUTILISÉE ===
+        if sous_df["marche"].isna().all():
+            gare_dodo = sous_df.iloc[0]["gare_dortoir"]
+            c.setFont("Helvetica-Bold", 10)
+            c.setFillColor(colors.darkgray)
+            c.drawCentredString(
+                (LEFT_MARGIN + PAGE_WIDTH - RIGHT_MARGIN) / 2,
+                y_line + 5,
+                f"Rame garée à : {gare_dodo}"
+            )
+            y_start -= (RAME_HEIGHT + ESPACEMENT_RAME)
+            rame_counter += 1
+            continue
+        # =======================
+
         # Ligne centrale
-        y_line = cadre_bottom + (RAME_HEIGHT / 2)
         c.setStrokeColor(colors.black)
-        c.setLineWidth(0.6)
-        c.line(LEFT_MARGIN, y_line, PAGE_WIDTH - RIGHT_MARGIN, y_line)
+        #c.line(LEFT_MARGIN, y_line, PAGE_WIDTH - RIGHT_MARGIN, y_line)
 
         # Traits horaires
         c.setFont("Helvetica", 4)
         for h in range(HEURE_MIN, HEURE_MAX + 1):
             xh = x_from_time(h)
+            c.setLineWidth(.8) 
             c.setStrokeColor(colors.lightgrey)
             c.setDash(1, 2)
-            c.line(xh, cadre_bottom, xh, cadre_top)
+            c.line(xh, cadre_bottom, xh, cadre_top,)
             c.setDash()
             c.setFillColor(colors.black)
             c.drawString(xh - 5, cadre_top - 6, f"{h}h")
+            c.setLineWidth(1) 
 
-        # Marches + nœuds
+
+        # === Marches classiques ===
         prev_node = None
         prev_arrivee = None
         premiere_marche = True
 
         for _, row in sous_df.iterrows():
+            # ===== Détection UM pour cette marche =====
+            marche = row["marche"]
+            um_list = um_by_marche.get(marche, [])
+            is_um = len(um_list) >= 2
+            is_current_lead = (is_um and rame == um_list[0])
+            # ==========================================
+
             x1 = x_from_time(row["depart"])
             x2 = x_from_time(row["arrivee"])
 
@@ -740,15 +769,33 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
                 continue
             if x1 > PAGE_WIDTH - RIGHT_MARGIN:
                 continue
+
             x1 = max(x1, LEFT_MARGIN + 2)
             x2 = min(x2, PAGE_WIDTH - RIGHT_MARGIN - 2)
 
-            if row.get("vide_voyageur", False):
+            if row.get("vide_voyageur", True):
                 bar_color = colors.lightgrey
             else:
                 bar_color = colors.black
+            # ===== Choix épaisseur selon UM =====
+            if is_um:
+                if is_current_lead:
+                    draw_train_bar(c, x1, x2, y_line+ 1.5, height=3, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line- 2, height=0.75, color=bar_color)
+                else:
+                    draw_train_bar(c, x1, x2, y_line+ 2, height=0.75, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line- 1.5, height=3, color=bar_color)
+            else:
+                    draw_train_bar(c, x1, x2, y_line, height=5, color=bar_color) # Cas normal
 
-            draw_train_bar(c, x1, x2, y_line, height=5, color=bar_color)
+            # if row.get("vide_voyageur", False):
+            #     # === HLP → ligne ondulée ===
+            #     draw_wave_bar(c, x1, x2, y_line, amplitude=2, wavelength=8, color=colors.lightgrey)
+            # else:
+            #     # === Marche voyageurs → barre normale ===
+            #     draw_train_bar(c, x1, x2, y_line, height=5, color=colors.black)
+
+            # ====================================
 
             gare_dep = str(row["gare_depart"])
             gare_arr = str(row["gare_arrivee"])
@@ -758,23 +805,22 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
             depart_label_deja_fait = False
             c.setFillColor(colors.black)
 
+            # --- Affichage de la gare de départ ---
             if prev_node is not None:
                 if prev_node["gare"] == gare_dep:
+                    # Gares identiques → on affiche au milieu
                     xm = (prev_node["x"] + x1) / 2.0
                     y_base = y_line - 7
 
                     c.setFont("Helvetica", 5)
-                    c.drawCentredString(xm, y_base, prev_node["gare"])
+                    c.drawCentredString(xm, y_base, gare_dep)
 
-                    draw_time_only(
-                        c, prev_node["x"], y_base - 5, prev_node["heure"], align="center"
-                    )
-                    draw_time_only(
-                        c, x1, y_base - 10, heure_dep, align="center"
-                    )
+                    draw_time_only(c, prev_node["x"], y_base - 5, prev_node["heure"], "center")
+                    draw_time_only(c, x1, y_base - 10, heure_dep, "center")
 
                     depart_label_deja_fait = True
                 else:
+                    # On affiche la gare précédente à droite
                     draw_station_label(
                         c,
                         prev_node["x"] - 1,
@@ -795,17 +841,18 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
                     c, x_depart, y_line - 7, gare_dep, heure_dep, align="left"
                 )
 
+            # --- Numéro de marche ---
             c.setFont("Helvetica", 5)
             c.setFillColor(colors.darkgray)
-            marche_text = str(row["marche"])
-
-            if row.get("vide_voyageur", False):
-                y_num = y_line + 12
+            marche=str(row["marche"])
+            if "EVM" in marche or "EVO" in marche or "EVI" in marche or "EVS" in marche:
+                marche_text = "HLP"
             else:
-                y_num = y_line + 7
-
+                marche_text = str(row["marche"])
+            y_num = y_line + (12 if row.get("vide_voyageur", False) else 7)
             c.drawCentredString((x1 + x2) / 2, y_num, marche_text)
 
+            # --- Affichage des écarts trop courts ---
             if prev_arrivee is not None:
                 ecart = row["depart"] - prev_arrivee
                 if ecart < 0.333:
@@ -818,16 +865,11 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
                     c.setFillColor(colors.black)
 
             prev_arrivee = row["arrivee"]
-
-            prev_node = {
-                "gare": gare_arr,
-                "x": x2,
-                "heure": heure_arr,
-            }
-
+            prev_node = {"gare": gare_arr, "x": x2, "heure": heure_arr}
             premiere_marche = False
 
-        # Dernière arrivée avec offset vers la droite
+
+        # === AFFICHAGE DE LA DERNIÈRE GARE ===
         if prev_node is not None:
             x_last = prev_node["x"] + LAST_LABEL_OFFSET
             draw_station_label(
@@ -839,15 +881,14 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
                 align="right",
             )
 
+
         y_start -= (RAME_HEIGHT + ESPACEMENT_RAME)
         rame_counter += 1
 
-    # Page récap paramètres + flux filtrés sur ce matériel
+    # Dernière page : paramètres
     draw_params_page(c, materiel_code, f"Matériel {materiel_code}")
-
     c.save()
     print(f"PDF généré : {nom_pdf}")
-
 
 # ------------------ Boucle principale ------------------
 def process_and_generate():
@@ -1002,11 +1043,11 @@ def process_and_generate():
     generate_pphpd_global(pphpd_par_axe)
 
     # Un PDF par matériel
-    for code in parc.keys():
-        df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
+    for type_materiel in parc.keys():
+        df_mat = df_assign_global[df_assign_global["materiel"] == type_materiel].copy()
         if df_mat.empty:
             continue
-        draw_pdf_for_material(df_mat, code)
+        draw_pdf_for_material(df_mat, type_materiel)
 
 
 def generate_pphpd_global(pphpd_par_axe):
