@@ -895,7 +895,11 @@ def process_and_generate():
     global FLUX_PAR_AXE
     FLUX_PAR_AXE = {}
 
-    # reset parc
+    # Load maintenance JSON
+    with open("gestion_maintenance.json", "r", encoding="utf-8") as f:
+        maintenance_data = json.load(f)
+
+    # reset parc usage counters
     for k in parc:
         parc[k]["utilise"] = 0
 
@@ -906,19 +910,16 @@ def process_and_generate():
     all_assignments = []
     pphpd_par_axe = {}
 
+    # ------------------------ 1) AFFECTATION DES MARCHES ------------------------
     for fichier_json in sorted(os.listdir(DOSSIER_JSON)):
+
         if not fichier_json.endswith(".json"):
             continue
 
         chemin_json = os.path.join(DOSSIER_JSON, fichier_json)
         with open(chemin_json, "r", encoding="utf-8") as f:
-            try:
-                data = json.load(f)
-            except Exception as e:
-                print(f"❌ Impossible de lire {chemin_json}: {e}")
-                continue
+            data = json.load(f)
 
-        # Axe ferroviaire à partir du nom du fichier
         base = os.path.splitext(fichier_json)[0]
         if base.startswith("marches_"):
             base = base[len("marches_"):]
@@ -928,8 +929,8 @@ def process_and_generate():
         rame_state = {}
         assignments = []
 
-        # Affectation automatique pour CE fichier
         for _, train in df.iterrows():
+
             gare_dep = train["gare_depart"]
             depart = train["depart"]
             candidate = None
@@ -943,112 +944,174 @@ def process_and_generate():
 
             if candidate is None:
                 candidate = get_rame_id(fichier_json)
-                marche_navette = navette_mat(
-                    candidate, gare_dep, depart, tampon_15m, navette_time
-                )
+                marche_navette = navette_mat(candidate, gare_dep, depart, tampon_15m, navette_time)
                 if marche_navette:
                     assignments.append(marche_navette)
                 rame_state[candidate] = {"gare": gare_dep, "dispo": 0}
 
-            assignments.append(
-                {
-                    "rame": candidate,
-                    "marche": train["marche"],
-                    "gare_depart": gare_dep,
-                    "depart": train["depart"],
-                    "gare_arrivee": train["gare_arrivee"],
-                    "arrivee": train["arrivee"],
-                    "vide_voyageur": train.get("vide_voyageur", False),
-                }
-            )
+            assignments.append({
+                "rame": candidate,
+                "marche": train["marche"],
+                "gare_depart": train["gare_depart"],
+                "depart": train["depart"],
+                "gare_arrivee": train["gare_arrivee"],
+                "arrivee": train["arrivee"],
+                "vide_voyageur": train.get("vide_voyageur", False)
+            })
+
             rame_state[candidate]["gare"] = train["gare_arrivee"]
             rame_state[candidate]["dispo"] = train["arrivee"]
 
-        # Navette soir pour ce fichier
+        # Ajouter navettes du soir
         for rame_id, state in rame_state.items():
             soir = navette_soir(rame_id, state["gare"], state["dispo"])
             if soir:
                 assignments.append(soir)
 
-        # Ajout de l'axe à toutes les marches de ce fichier
+        # Marquer axe ferroviaire
         for a in assignments:
             a["axe"] = axe_label
 
-        if not assignments:
-            print(f"{fichier_json} -> aucun assignment généré.")
-            continue
-
-        df_assign_file = pd.DataFrame(assignments)
-        df_assign_file["vide_voyageur"] = df_assign_file["vide_voyageur"].astype("boolean").fillna(False)
-
-        # distances pour ce fichier (utile si on veut analyser par axe)
-        df_assign_file["distance_km"] = df_assign_file.apply(get_distance_safe, axis=1)
-
-        # materiels réellement engagés sur cet axe
-        df_assign_file["materiel"] = df_assign_file["rame"].apply(get_materiel_code_from_rame)
-        materiels_axe = sorted(df_assign_file["materiel"].dropna().unique().tolist())
-
         all_assignments.extend(assignments)
 
-        # équilibre flux (console) PAR FICHIER / AXE
-        premiers_depart = (
-            df_assign_file.sort_values("depart").groupby("rame").first()
-        )
-        dernieres_arrivee = (
-            df_assign_file.sort_values("arrivee").groupby("rame").last()
-        )
-        depart_counts = (
-            premiers_depart["gare_depart"].value_counts().rename("Departs")
-        )
-        arrivee_counts = (
-            dernieres_arrivee["gare_arrivee"].value_counts().rename("Arrivees")
-        )
-        flux_balance = (
-            pd.concat([depart_counts, arrivee_counts], axis=1)
-            .fillna(0)
-            .astype(int)
-        )
-        flux_balance["Diff (Arr - Dep)"] = (
-            flux_balance["Arrivees"] - flux_balance["Departs"]
-        )
+        # stats par axe
+        df_assign_file = pd.DataFrame(assignments)
+        df_assign_file["vide_voyageur"] = df_assign_file["vide_voyageur"].astype("boolean").fillna(False)
+        df_assign_file["distance_km"] = df_assign_file.apply(get_distance_safe, axis=1)
+        df_assign_file["materiel"] = df_assign_file["rame"].apply(get_materiel_code_from_rame)
 
-        # Sauvegarde de l'équilibre des flux pour les PDF matériels,
-        # avec la liste des matériels engagés sur l'axe
+        premiers_depart = df_assign_file.sort_values("depart").groupby("rame").first()
+        dernieres_arrivee = df_assign_file.sort_values("arrivee").groupby("rame").last()
+        depart_counts = premiers_depart["gare_depart"].value_counts().rename("Departs")
+        arrivee_counts = dernieres_arrivee["gare_arrivee"].value_counts().rename("Arrivees")
+        flux_balance = pd.concat([depart_counts, arrivee_counts], axis=1).fillna(0).astype(int)
+        flux_balance["Diff (Arr - Dep)"] = flux_balance["Arrivees"] - flux_balance["Departs"]
+
         FLUX_PAR_AXE[axe_label] = {
             "fichier": fichier_json,
             "flux": flux_balance.reset_index(),
-            "materiels": materiels_axe,
+            "materiels": sorted(df_assign_file["materiel"].dropna().unique().tolist()),
         }
 
-        # Calcul PPHPD par axe (pour le PDF global)
-        df_pphpd = calcul_pphpd_par_direction(df_assign_file, parc)
-        pphpd_par_axe[axe_label] = df_pphpd
+        pphpd_par_axe[axe_label] = calcul_pphpd_par_direction(df_assign_file, parc)
 
-        print(f"{fichier_json} (axe : {axe_label})")
-        print("--- Vérification équilibre par gare (Arrivées - Départs) ---")
-        print(flux_balance)
-        print("\n")
-
-    # Après avoir traité TOUS les fichiers : on génère les PDF
+    # Si aucune marche
     if not all_assignments:
         print("Aucun assignment global généré.")
         return
 
+
+    # ------------------------ 2) INJECTION MAINTENANCE ------------------------
     df_assign_global = pd.DataFrame(all_assignments)
     df_assign_global["vide_voyageur"] = df_assign_global["vide_voyageur"].astype("boolean").fillna(False)
     df_assign_global["distance_km"] = df_assign_global.apply(get_distance_safe, axis=1)
     df_assign_global["materiel"] = df_assign_global["rame"].apply(get_materiel_code_from_rame)
 
-    # PDF PPHPD global
+    maintenance_rows = []
+
+    for code in parc.keys():
+
+        if code not in maintenance_data:
+            continue
+
+        df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
+
+        for slot in maintenance_data[code]["slots"]:
+
+            duration = slot["duration_minutes"] / 60.0
+            win_start, win_end = slot["window"]
+            location = slot["location"]
+
+            slot_placed = False
+
+            for rame in sorted(df_mat["rame"].unique()):
+
+                df_rame = df_mat[df_mat["rame"] == rame].sort_values("depart").reset_index(drop=True)
+
+                prev_time = win_start
+                prev_row = None
+
+                for _, row in df_rame.iterrows():
+
+                    # ignore si la rame n'est pas dans le bon dépôt
+                    if prev_row is not None and prev_row["gare_arrivee"] != location:
+                        prev_time = row["arrivee"]
+                        prev_row = row
+                        continue
+
+                    start_free = max(prev_time, win_start)
+                    end_free = min(row["depart"], win_end)
+
+                    # --- Tampon 1h autour des EVO ---
+                    if prev_row is not None and "EVO" in str(prev_row["marche"]):
+                        start_free = max(start_free, prev_row["arrivee"] + 1.0)
+
+                    if "EVO" in str(row["marche"]):
+                        end_free = min(end_free, row["depart"] - 1.0)
+
+                    if (end_free - start_free) >= duration:
+                        maintenance_rows.append({
+                            "rame": rame,
+                            "marche": f"MAINT-{rame}",
+                            "gare_depart": location,
+                            "depart": start_free,
+                            "gare_arrivee": location,
+                            "arrivee": start_free + duration,
+                            "vide_voyageur": True,
+                            "axe": "MAINTENANCE",
+                            "materiel":code
+                        })
+                        slot_placed = True
+                        break
+
+                    prev_time = row["arrivee"]
+                    prev_row = row
+
+                # tentative après dernière marche si possible
+                if not slot_placed and prev_row is not None and prev_row["gare_arrivee"] == location:
+                    candidate_start = max(prev_row["arrivee"], win_start)
+
+                    if "EVO" in str(prev_row["marche"]):
+                        candidate_start += 1.0
+
+                    if candidate_start + duration <= win_end:
+                        maintenance_rows.append({
+                            "rame": rame,
+                            "marche": f"MAINT-{rame}",
+                            "gare_depart": location,
+                            "depart": candidate_start,
+                            "gare_arrivee": location,
+                            "arrivee": candidate_start + duration,
+                            "vide_voyageur": True,
+                            "axe": "MAINTENANCE",
+                            "materiel":code
+                        })
+                        slot_placed = True
+
+                if not slot_placed:
+                    print(f"⚠️ Impossible de placer maintenance {code} slot {win_start}-{win_end}h")
+
+
+    # merge maintenance
+    if maintenance_rows:
+        df_assign_global = pd.concat([df_assign_global, pd.DataFrame(maintenance_rows)], ignore_index=True)
+        df_assign_global = df_assign_global.sort_values("depart")
+
+
+    # ------------------------ 3) EXPORT PDF ------------------------
     generate_pphpd_global(pphpd_par_axe)
 
-    # Un PDF par matériel
-    for type_materiel in parc.keys():
-        df_mat = df_assign_global[df_assign_global["materiel"] == type_materiel].copy()
+    for code in parc.keys():
+        df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
         if df_mat.empty:
             continue
-        draw_pdf_for_material(df_mat, type_materiel)
 
+        print(f"\n=== Maintenances appliquées pour {code} ===")
+        print(df_mat[df_mat["marche"].astype(str).str.startswith("MAINT")][["rame","marche","gare_depart","depart","gare_arrivee","arrivee"]])
+
+        draw_pdf_for_material(df_mat, code)
+
+    print("\n✅ Process terminé avec maintenance + tampon EVO intégrés.")
 
 def generate_pphpd_global(pphpd_par_axe):
     from reportlab.lib.utils import ImageReader
