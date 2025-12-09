@@ -24,7 +24,7 @@ seuil_atelier = 1.25
 # Parc de rames
 parc = {
     "R2N":    {"modele": "Regio2n",   "numero": 22201, "quantite": 10,  "utilise": 0, "places": 505},
-    "BGC":    {"modele": "BGC",       "numero": 81501, "quantite": 27,  "utilise": 0, "places": 200},
+    "BGC":    {"modele": "BGC",       "numero": 81501, "quantite": 22,  "utilise": 0, "places": 200},
     "REG":    {"modele": "Regiolis",  "numero": 84501, "quantite": 15,  "utilise": 0, "places": 220},
     "2NPG":   {"modele": "2NPG",      "numero": 23501, "quantite": 30,  "utilise": 0, "places": 210},
 }
@@ -247,8 +247,8 @@ ESPACEMENT_RAME = 10  # espace vertical entre cadres
 HAUTEUR_DISPO = PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN
 RAME_HEIGHT = (HAUTEUR_DISPO - (MAX_RAMES_PER_PAGE - 1) * ESPACEMENT_RAME) / MAX_RAMES_PER_PAGE
 
-HEURE_MIN = 4
-HEURE_MAX = 23
+HEURE_MIN = 0
+HEURE_MAX = 24
 ECHELLE_HEURE = (PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN) / (HEURE_MAX - HEURE_MIN)
 
 # Fenêtre de référence pour la performance (en heure décimale)
@@ -1007,92 +1007,106 @@ def process_and_generate():
     df_assign_global["distance_km"] = df_assign_global.apply(get_distance_safe, axis=1)
     df_assign_global["materiel"] = df_assign_global["rame"].apply(get_materiel_code_from_rame)
 
+    # ------------------ 2) AFFECTATION DES MAINTENANCES (mimique des trains) ------------------
+
     maintenance_rows = []
 
     for code in parc.keys():
 
+        df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
+        if df_mat.empty:
+            continue
+
         if code not in maintenance_data:
             continue
 
-        df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
+        slots = maintenance_data[code]["slots"]
 
-        for slot in maintenance_data[code]["slots"]:
+        # état dynamique des rames comme pour les trains
+        rame_state = {}
 
+        # initialisation état rame + leurs marches existantes
+        rame_timetable = {}
+        for rame, grp in df_mat.groupby("rame"):
+            grp = grp.sort_values("depart")
+            rame_timetable[rame] = grp[["depart", "arrivee", "gare_arrivee"]].to_dict("records")
+            rame_state[rame] = {
+                "gare": grp.iloc[-1]["gare_arrivee"],
+                "dispo": grp.iloc[-1]["arrivee"]
+            }
+
+        # tri des slots du plus long au plus court
+        slots = sorted(slots, key=lambda s: -s["duration_minutes"])
+
+        for slot in slots:
             duration = slot["duration_minutes"] / 60.0
             win_start, win_end = slot["window"]
             location = slot["location"]
 
-            slot_placed = False
+            placed = False
 
-            for rame in sorted(df_mat["rame"].unique()):
+            # Essayer chaque rame disponible
+            for rame_id in sorted(rame_state.keys()):
+                timetable = rame_timetable[rame_id]
 
-                df_rame = df_mat[df_mat["rame"] == rame].sort_values("depart").reset_index(drop=True)
+                # Filtrer uniquement les événements dans la fenêtre
+                events = [(win_start, win_start, location)]  # borne début
+                for ev in timetable:
+                    if ev["depart"] <= win_end and ev["arrivee"] >= win_start:
+                        events.append((ev["depart"], ev["arrivee"], ev["gare_arrivee"]))
+                events.append((win_end, win_end, location))  # borne fin
+                events = sorted(events)
 
-                prev_time = win_start
-                prev_row = None
+                # Essayer de trouver un trou
+                for i in range(len(events) - 1):
+                    end_prev = events[i][1] + 1   # tampon 1h après
+                    start_next = events[i+1][0] - 1 # tampon 1h avant
 
-                for _, row in df_rame.iterrows():
+                    free_start = max(end_prev, win_start)
+                    free_end   = min(start_next, win_end)
 
-                    # ignore si la rame n'est pas dans le bon dépôt
-                    if prev_row is not None and prev_row["gare_arrivee"] != location:
-                        prev_time = row["arrivee"]
-                        prev_row = row
-                        continue
+                    if free_end - free_start >= duration:
 
-                    start_free = max(prev_time, win_start)
-                    end_free = min(row["depart"], win_end)
+                        # vérifier que la rame est dans la bonne gare dans ce trou
+                        # gare = arrivée du dernier évènement valable
+                        last_gare = events[i][2]
+                        if last_gare != location:
+                            continue
 
-                    # --- Tampon 1h autour des EVO ---
-                    if prev_row is not None and "EVO" in str(prev_row["marche"]):
-                        start_free = max(start_free, prev_row["arrivee"] + 1.0)
-
-                    if "EVO" in str(row["marche"]):
-                        end_free = min(end_free, row["depart"] - 1.0)
-
-                    if (end_free - start_free) >= duration:
                         maintenance_rows.append({
-                            "rame": rame,
-                            "marche": f"MAINT-{rame}",
+                            "rame": rame_id,
+                            "marche": f"MAINT-{code}-{round(free_start,2)}",
                             "gare_depart": location,
-                            "depart": start_free,
+                            "depart": free_start,
                             "gare_arrivee": location,
-                            "arrivee": start_free + duration,
+                            "arrivee": free_start + duration,
                             "vide_voyageur": True,
-                            "axe": "MAINTENANCE",
-                            "materiel":code
+                            "materiel": code,
+                            "axe": "MAINTENANCE"
                         })
-                        slot_placed = True
+
+                        # mise à jour des états
+                        rame_state[rame_id]["dispo"] = free_start + duration
+                        rame_state[rame_id]["gare"] = location
+
+                        # ajouter au planning
+                        rame_timetable[rame_id].append({
+                            "depart": free_start,
+                            "arrivee": free_start + duration,
+                            "gare_arrivee": location
+                        })
+
+                        print(f"🛠 Maintenance placée: {code} → rame {rame_id} ({duration}h entre {round(free_start,2)}h et {round(free_start+duration,2)}h)")
+                        placed = True
                         break
 
-                    prev_time = row["arrivee"]
-                    prev_row = row
+                if placed:
+                    break
 
-                # tentative après dernière marche si possible
-                if not slot_placed and prev_row is not None and prev_row["gare_arrivee"] == location:
-                    candidate_start = max(prev_row["arrivee"], win_start)
+            if not placed:
+                print(f"⚠️ IMPOSSIBLE : {code} maintenance ({duration}h) dans fenêtre {win_start}-{win_end}")
 
-                    if "EVO" in str(prev_row["marche"]):
-                        candidate_start += 1.0
-
-                    if candidate_start + duration <= win_end:
-                        maintenance_rows.append({
-                            "rame": rame,
-                            "marche": f"MAINT-{rame}",
-                            "gare_depart": location,
-                            "depart": candidate_start,
-                            "gare_arrivee": location,
-                            "arrivee": candidate_start + duration,
-                            "vide_voyageur": True,
-                            "axe": "MAINTENANCE",
-                            "materiel":code
-                        })
-                        slot_placed = True
-
-                if not slot_placed:
-                    print(f"⚠️ Impossible de placer maintenance {code} slot {win_start}-{win_end}h")
-
-
-    # merge maintenance
+    # merge
     if maintenance_rows:
         df_assign_global = pd.concat([df_assign_global, pd.DataFrame(maintenance_rows)], ignore_index=True)
         df_assign_global = df_assign_global.sort_values("depart")
