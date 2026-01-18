@@ -1,5 +1,13 @@
 [
     {
+        "marche": 881799,
+        "gare_depart": "MSC",
+        "depart": 6.5,
+        "gare_arrivee": "AUB",
+        "arrivee": 7,
+        "vide_voyageur": true
+    },
+    {
         "marche": 881005,
         "gare_depart": "MSC",
         "depart": 6.133,
@@ -26,20 +34,6 @@
         "depart": 7.35,
         "gare_arrivee": "MSC",
         "arrivee": 7.783
-    },
-    {
-        "marche": 881012,
-        "gare_depart": "AUB",
-        "depart": 7.35,
-        "gare_arrivee": "MSC",
-        "arrivee": 7.783
-    },
-    {
-        "marche": 881013,
-        "gare_depart": "MSC",
-        "depart": 7.133,
-        "gare_arrivee": "AUB",
-        "arrivee": 7.667
     },
     {
         "marche": 881013,
@@ -75,20 +69,6 @@
         "depart": 8.133,
         "gare_arrivee": "AUB",
         "arrivee": 8.667
-    },
-    {
-        "marche": 881021,
-        "gare_depart": "MSC",
-        "depart": 8.133,
-        "gare_arrivee": "AUB",
-        "arrivee": 8.667
-    },
-    {
-        "marche": 881024,
-        "gare_depart": "AUB",
-        "depart": 8.85,
-        "gare_arrivee": "MSC",
-        "arrivee": 9.283
     },
     {
         "marche": 881024,
@@ -196,20 +176,6 @@
         "arrivee": 18.367
     },
     {
-        "marche": 881072,
-        "gare_depart": "AUB",
-        "depart": 17.85,
-        "gare_arrivee": "MSC",
-        "arrivee": 18.367
-    },
-    {
-        "marche": 881073,
-        "gare_depart": "MSC",
-        "depart": 17.717,
-        "gare_arrivee": "AUB",
-        "arrivee": 18.167
-    },
-    {
         "marche": 881073,
         "gare_depart": "MSC",
         "depart": 17.717,
@@ -238,20 +204,6 @@
         "arrivee": 19.367
     },
     {
-        "marche": 881080,
-        "gare_depart": "AUB",
-        "depart": 18.85,
-        "gare_arrivee": "MSC",
-        "arrivee": 19.367
-    },
-    {
-        "marche": 881081,
-        "gare_depart": "MSC",
-        "depart": 18.717,
-        "gare_arrivee": "AUB",
-        "arrivee": 19.167
-    },
-    {
         "marche": 881081,
         "gare_depart": "MSC",
         "depart": 18.717,
@@ -264,5 +216,13 @@
         "depart": 19.85,
         "gare_arrivee": "MSC",
         "arrivee": 20.367
+    },
+    {
+        "marche": 881999,
+        "gare_depart": "AUB",
+        "depart": 19,
+        "gare_arrivee": "MBC",
+        "arrivee": 19.5,
+        "vide_voyageur": true
     }
 ]

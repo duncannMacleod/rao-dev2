@@ -1,38 +1,46 @@
 {
   "BGC": {
     "slots": [
-      { "duration_minutes": 540, "window": [0,24], "location": "AVG" },
-      { "duration_minutes": 540, "window": [0,24], "location": "AVG" },
-      { "duration_minutes": 360, "window": [0,24], "location": "AVG" },
-      { "duration_minutes": 360, "window": [0,24], "location": "AVG" },
-      { "duration_minutes": 240, "window": [0,24], "location": "AVG" },
-      { "duration_minutes": 240, "window": [0,24], "location": "AVG" }
+      { "duration_minutes": 480, "window": [0,24], "location": "MBC", "types": ["terre_plein"] },
+      { "duration_minutes": 480, "window": [0,24], "location": "MBC", "types": ["toiture"] },
+      { "duration_minutes": 360, "window": [0,24], "location": "MBC", "types": ["fosse"] },
+      { "duration_minutes": 360, "window": [0,24], "location": "AVG", "types": ["fosse"] },
+      { "duration_minutes": 300, "window": [0,24], "location": "MBC", "types": ["terre_plein", "toiture"] },
+      { "duration_minutes": 300, "window": [0,24], "location": "MBC", "types": ["terre_plein"] },
+      { "duration_minutes": 300, "window": [0,24], "location": "AVG", "types": ["terre_plein"] },
+      { "duration_minutes": 300, "window": [0,24], "location": "AVG", "types": ["fosse","verin_fosse"] },
+      { "duration_minutes": 240, "window": [0,24], "location": "MBC", "types": ["toiture"] },
+      { "duration_minutes": 240, "window": [0,24], "location": "MBC", "types": ["terre_plein"] }
     ]
   },
 
   "REG": {
     "slots": [
-      { "duration_minutes": 540, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 360, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 360, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 360, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 240, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 120, "window": [0,24], "location": "MBC" }
+      { "duration_minutes": 360, "window": [0,24], "location": "MBC", "types": ["terre_plein"] },
+      { "duration_minutes": 360, "window": [0,24], "location": "MBC", "types": ["fosse"] },
+      { "duration_minutes": 360, "window": [0,24], "location": "MBC", "types": ["toiture"] },
+      { "duration_minutes": 360, "window": [0,24], "location": "MBC", "types": ["terre_plein", "fosse"] },
+      { "duration_minutes": 240, "window": [0,24], "location": "MBC", "types": ["toiture"] },
+      { "duration_minutes": 240, "window": [0,24], "location": "MBC", "types": ["fosse"] },
+      { "duration_minutes": 240, "window": [0,24], "location": "MBC", "types": ["terre_plein"] }
     ]
   },
 
   "2NPG": {
     "slots": [
-      { "duration_minutes": 540, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 360, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 240, "window": [0,24], "location": "MBC" },
-      { "duration_minutes": 120, "window": [0,24], "location": "MBC" }
+      { "duration_minutes": 300, "window": [0,24], "location": "MBC", "types": ["terre_plein"] },
+      { "duration_minutes": 300, "window": [0,24], "location": "MBC", "types": ["fosse"] },
+      { "duration_minutes": 300, "window": [0,24], "location": "MBC", "types": ["toiture"] },
+      { "duration_minutes": 300, "window": [0,24], "location": "MBC", "types": ["terre_plein"] },
+      { "duration_minutes": 180, "window": [0,24], "location": "MBC", "types": ["fosse","verin_fosse"] }
     ]
   },
 
   "R2N": {
     "slots": [
-      { "duration_minutes": 540, "window": [0,24], "location": "AVG" }
+      { "duration_minutes": 240, "window": [0,24], "location": "AVG", "types": ["terre_plein"] },
+      { "duration_minutes": 240, "window": [0,24], "location": "AVG", "types": ["toiture"] },
+      { "duration_minutes": 240, "window": [0,24], "location": "MBC", "types": ["fosse"] }
     ]
   }
 }

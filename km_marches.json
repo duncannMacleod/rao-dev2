@@ -48,6 +48,11 @@
         "origine":"MSC",
         "destination":"AXP",
         "distance":36
+    },
+    {
+        "origine":"MBC",
+        "destination":"AXP",
+        "distance":38
     }, 
     {
         "origine":"MSC",
@@ -110,6 +115,11 @@
         "distance":53
     }, 
     {
+        "origine":"LYD",
+        "destination":"MAC",
+        "distance":67
+    }, 
+    {
         "origine":"AVI",
         "destination":"MAC",
         "distance":298
@@ -123,5 +133,130 @@
         "origine":"AVI",
         "destination":"LPR",
         "distance":235
+    },
+    {
+        "origine":"AVI",
+        "destination":"AVG",
+        "distance":2
+    },
+    {
+        "origine":"AVV",
+        "destination":"AVG",
+        "distance":2
+    },
+    {
+        "origine":"AXP",
+        "destination":"AXG",
+        "distance":0.4
+    },
+    {
+        "origine":"TLN",
+        "destination":"TLG",
+        "distance":1
+    },
+    {
+        "origine":"HYE",
+        "destination":"HYG",
+        "distance":0.4
+    },
+    {
+        "origine":"LYD",
+        "destination":"LYG",
+        "distance":1
+    }, 
+    {
+        "origine":"MAS",
+        "destination":"MBC",
+        "distance":54
+    }, 
+    {
+        "origine":"MAS",
+        "destination":"MAG",
+        "distance":1
+    }, 
+    {
+        "origine":"HYE",
+        "destination":"HYG",
+        "distance":0.4
+    }, 
+    {
+        "origine":"HYE",
+        "destination":"TLG",
+        "distance":20
+    }, 
+    {
+        "origine":"HYE",
+        "destination":"TLG",
+        "distance":20
+    }, 
+    {
+        "origine":"HYE",
+        "destination":"TLN",
+        "distance":20
+    }, 
+    {
+        "origine":"HYE",
+        "destination":"MBC",
+        "distance":84
+    }, 
+    {
+        "origine":"TLN",
+        "destination":"MBC",
+        "distance":64
+    }, 
+    {
+        "origine":"TLG",
+        "destination":"MBC",
+        "distance":64
+    }, 
+    {
+        "origine":"BRI",
+        "destination":"BRG",
+        "distance":0.4
+    }, 
+    {
+        "origine":"LAC",
+        "destination":"LAG",
+        "distance":0.4
+    }, 
+    {
+        "origine":"GAG",
+        "destination":"GAP",
+        "distance":0.4
+    },
+    {
+        "origine":"LYD",
+        "destination":"AVG",
+        "distance":237
+    },
+    {
+        "origine":"LYG",
+        "destination":"AVG",
+        "distance":238
+    },
+    {
+        "origine":"AVG",
+        "destination":"CAS",
+        "distance":28
+    },
+    {
+        "origine":"GAG",
+        "destination":"SIS",
+        "distance":78
+    },
+    {
+        "origine":"LAC",
+        "destination":"TLG",
+        "distance":69
+    },
+    {
+        "origine":"LPR",
+        "destination":"LYG",
+        "distance":3
+    },
+    {
+        "origine":"MBC",
+        "destination":"AUB",
+        "distance":14
     }
 ]

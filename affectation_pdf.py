@@ -1,20 +1,26 @@
-# generate_pdf_from_marches.py
 import json
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import tempfile
+import numpy as np
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.units import mm
+from collections import defaultdict
+
+import unicodedata
+import re
+
+
+
 
 # ------------------ Paramètres généraux ------------------
 DOSSIER_JSON = "marches_json"
 KM_MARCHES_FILE = "km_marches.json"
 
-# Paramètres métiers
-m_st_chrls = "MSC"
+# Paramètres 
 navette_time = 0.083
 tampon = 0.333
 tampon_15m = 0.25
@@ -23,18 +29,54 @@ seuil_atelier = 1.25
 
 # Parc de rames
 parc = {
-    "R2N":    {"modele": "Regio2n",   "numero": 22201, "quantite": 10,  "utilise": 0, "places": 505},
-    "BGC":    {"modele": "BGC",       "numero": 81501, "quantite": 22,  "utilise": 0, "places": 200},
-    "REG":    {"modele": "Regiolis",  "numero": 84501, "quantite": 15,  "utilise": 0, "places": 220},
-    "2NPG":   {"modele": "2NPG",      "numero": 23501, "quantite": 30,  "utilise": 0, "places": 210},
+    #"R2N_OP": {"modele": "Regio2n_omneo_premium",   "numero": 59001, "quantite": 2,  "utilise": 0, "places": 505},
+    "R2N": {"modele": "Regio2n",                    "numero": 57001, "quantite": 40,  "utilise": 0, "places": 505},
+    "BGC":    {"modele": "BGC",                     "numero": 81501, "quantite": 27,  "utilise": 0, "places": 200},
+    "REG":    {"modele": "Regiolis",                "numero": 84501, "quantite": 15,  "utilise": 0, "places": 220},
+    "2NPG":   {"modele": "2NPG",                    "numero": 23501, "quantite": 30,  "utilise": 0, "places": 210},
+    "XTER":   {"modele": "XTER",                    "numero": 72501, "quantite": 2,  "utilise": 0, "places": 300},
+
 }
 
 # Gare où les rames sont affectés en dépôt
 DEPOT_AFFECTATION = {
-    "R2N": "AVG",
-    "BGC": "AVG",
-    "REG": "MBC",
-    "2NPG": "MBC",
+    "R2N": ["AVG", "MBC"],
+    "BGC": ["AVG"],
+    "REG": ["MBC", "AVG"],
+    "2NPG": ["MBC"],
+    "XTER": ["MBC"]
+}
+
+
+AXES_OUEST = {
+    "marseille-avignon",
+    "marseille-avignon-via-rognac",
+    "marseille-miramas-via-cote-bleue",
+    "vallee-du-rhone",
+    "avignon-tgv-carpentras",
+    "marseille-aix-en-provence"
+}
+
+AXES_EST = {
+    
+    "marseille-aubagne",
+    "marseille-toulon-hyeres-les-arcs-draguignan",
+    "marseille-briancon",
+    "intervilles-marseille-lyon",
+}
+
+MAINT_TYPE_COLORS = {
+    "terre_plein": "#1f77b4",   # bleu
+    "toiture":     "#ff7f0e",   # orange
+    "fosse":       "#2ca02c",   # vert
+    "verin_fosse": "#d62728"    # rouge
+}
+
+MAINT_TYPE_ORDER = {
+    "terre_plein": 0,
+    "toiture": 1,
+    "fosse": 2,
+    "verin_fosse": 3
 }
 
 
@@ -42,22 +84,589 @@ DEPOT_AFFECTATION = {
 # FLUX_PAR_AXE[axe_label] = {"fichier": ..., "flux": df, "materiels": [codes]}
 FLUX_PAR_AXE = {}
 
+def plot_repartition_flotte_par_ligne(df_assign_mat):
+    """
+    Répartition de la flotte par ligne avec total par matériel en légende.
+    """
+
+    import matplotlib.pyplot as plt
+
+    # ─────────────────────────────────────────────
+    # 1) Nettoyage
+    # ─────────────────────────────────────────────
+    df = df_assign_mat.copy()
+    df = df[~df["axe"].astype(str).str.upper().str.contains("MAINT")]
+
+    df["axe_norm"] = df["axe"].apply(normalize_axe_name)
+
+    # ─────────────────────────────────────────────
+    # 2) Une rame = un axe
+    # ─────────────────────────────────────────────
+    rame_axe = (
+        df.sort_values("depart")
+        .groupby("rame")
+        .first()[["axe_norm", "materiel"]]
+        .reset_index()
+    )
+
+    # ─────────────────────────────────────────────
+    # 3) Comptage par axe / matériel
+    # ─────────────────────────────────────────────
+    table = (
+        rame_axe
+        .groupby(["axe_norm", "materiel"])
+        .size()
+        .unstack(fill_value=0)
+    )
+
+    # Totaux par matériel (pour la légende)
+    total_par_materiel = (
+        rame_axe
+        .groupby("materiel")["rame"]
+        .nunique()
+        .to_dict()
+    )
+
+    # ─────────────────────────────────────────────
+    # 4) Ordre des axes
+    # ─────────────────────────────────────────────
+    axes_ouest = [a for a in table.index if a in AXES_OUEST]
+    axes_est   = [a for a in table.index if a in AXES_EST]
+
+    table = table.loc[axes_ouest + axes_est]
+
+    labels = [a.replace("-", " ").title() for a in table.index]
+
+    # ─────────────────────────────────────────────
+    # 5) Plot
+    # ─────────────────────────────────────────────
+    colors = {
+        "R2N": "#2C5876",
+        "BGC": "#E07A3F",
+        "2NPG": "#2E6B2D",
+        "REG": "#4FA3D1",
+        "XTER": "#8E44AD",
+    }
+
+    fig, ax = plt.subplots(figsize=(13, 6))
+
+    left = [0] * len(table)
+
+    for mat in table.columns:
+        values = table[mat].values
+        ax.barh(
+            labels,
+            values,
+            left=left,
+            label=f"{mat} ({total_par_materiel.get(mat, 0)})",
+            color=colors.get(mat, "#7f7f7f")
+        )
+        left = [l + v for l, v in zip(left, values)]
+
+    # Séparateur Ouest / Est
+    if axes_ouest:
+        ax.axhline(len(axes_ouest) - 0.5, color="black", linewidth=1)
+
+    # ─────────────────────────────────────────────
+    # 6) Mise en forme
+    # ─────────────────────────────────────────────
+    ax.set_title("Répartition de la flotte par ligne")
+    ax.set_xlabel("Nombre de rames")
+    ax.invert_yaxis()
+    ax.grid(axis="x", linestyle="--", alpha=0.4)
+    ax.legend(title="Matériel (total utilisé)")
+
+    plt.tight_layout()
+    plt.show()
+
+
+def split_used_and_unused_rames(df_assign_mat, materiel_code, parc):
+    """
+    Sépare les rames :
+    - utilisées : au moins une vraie marche (hors MAINT et hors None)
+    - inutilisées : présentes au parc mais sans marche réelle
+
+    Retourne :
+    - rame_list_used : liste triée des rames utilisées
+    - rames_inutilisees : liste triée des rames inutilisées
+    """
+
+    # Rames avec au moins une vraie marche
+    df_real = df_assign_mat[
+        df_assign_mat["marche"].notna()
+        & ~df_assign_mat["marche"].astype(str).str.startswith("MAINT")
+    ]
+
+    rame_list_used = sorted(df_real["rame"].unique())
+
+    # Toutes les rames du parc pour ce matériel
+    info = parc[materiel_code]
+    all_rames = list(
+        range(info["numero"], info["numero"] + info["quantite"])
+    )
+
+    rames_inutilisees = sorted(
+        r for r in all_rames if r not in rame_list_used
+    )
+
+    return rame_list_used, rames_inutilisees
+
+def compute_maintenance_occupation(df_assign_global):
+    """
+    Prépare les données d’occupation des voies sous forme Gantt.
+    L’affectation temporelle des voies est conservée.
+    Les infrastructures par voie sont réduites au strict nécessaire (logique métier).
+    """
+
+    df_maint = df_assign_global[
+        (df_assign_global["axe"] == "MAINTENANCE")
+        | (df_assign_global.get("type") == "MAINT")
+    ].copy()
+
+    if df_maint.empty:
+        return {}
+
+    def reduce_infra(types):
+        """
+        Réduction métier des besoins d'infrastructure :
+        - verin_fosse domine fosse
+        - toiture domine terre_plein
+        - fosse domine terre_plein
+        """
+        t = set(types)
+
+        if "verin_fosse" in t:
+            t.discard("fosse")
+
+        if "toiture" in t:
+            t.discard("terre_plein")
+
+        if "fosse" in t:
+            t.discard("terre_plein")
+
+        return list(t)
+
+    occupation_by_site = {}
+
+    for site, grp in df_maint.groupby("gare_depart"):
+        grp = grp.sort_values("depart")
+
+        voies_fin = []      # heure de libération par voie
+        voies_infra = {}    # voie -> set d'infra
+        rows = []
+
+        for _, r in grp.iterrows():
+            start = r["depart"]
+            end = r["arrivee"]
+            rame = r["rame"]
+            types = set(r.get("types", []))
+
+            # 1) affectation temporelle STRICTEMENT IDENTIQUE à ton algo initial
+            voie = None
+            for i, free_at in enumerate(voies_fin):
+                if free_at <= start:
+                    voie = i + 1
+                    voies_fin[i] = end
+                    break
+
+            if voie is None:
+                voies_fin.append(end)
+                voie = len(voies_fin)
+
+            # 2) accumulation brute des infra
+            if voie not in voies_infra:
+                voies_infra[voie] = set()
+            voies_infra[voie].update(types)
+
+            rows.append({
+                "rame": rame,
+                "start": start,
+                "end": end,
+                "voie": voie,
+                "types": list(types)  # types instantanés (pour le graphe)
+            })
+
+        df_site = pd.DataFrame(rows)
+
+        # 3) réduction métier FINALE des infra par voie
+        df_site["infra_reduite"] = None
+
+        for voie, infra in voies_infra.items():
+            reduced = reduce_infra(infra)
+            df_site.loc[df_site["voie"] == voie, "infra_reduite"] = df_site.loc[
+                df_site["voie"] == voie
+            ].apply(lambda _: reduced, axis=1)
+
+
+        occupation_by_site[site] = df_site
+
+    return occupation_by_site
+
+def plot_maintenance_occupation(occupation_by_site):
+    """
+    Diagramme Gantt + synthèse infra par voie (PDF)
+    """
+
+    if not occupation_by_site:
+        print("⚠️ Aucun événement de maintenance.")
+        return
+
+    from matplotlib.patches import Patch
+    from reportlab.lib import colors
+
+    nom_pdf = "occupation_voies_maintenance.pdf"
+    c = canvas.Canvas(nom_pdf, pagesize=A4)
+
+    PAGE_WIDTH, PAGE_HEIGHT = A4
+    left = 50
+    right = 50
+
+    for site, df in occupation_by_site.items():
+        if df.empty:
+            continue
+
+        # =========================
+        # 1) PRÉPARATION DES DONNÉES
+        # =========================
+        df = df.copy()
+
+        df["main_type"] = df["types"].apply(
+            lambda t: t[0] if isinstance(t, list) and t else "terre_plein"
+        )
+
+        df["type_order"] = df["main_type"].map(
+            lambda t: MAINT_TYPE_ORDER.get(t, 99)
+        )
+
+        # ⚠️ TRI VISUEL UNIQUEMENT (NE CHANGE PAS LES VOIES)
+        df = df.sort_values(
+            by=["type_order", "start", "voie"]
+        )
+
+        max_voie = df["voie"].max()
+
+        # =========================
+        # 2) GRAPHE MATPLOTLIB
+        # =========================
+        plt.figure(figsize=(8, 4))
+        plt.tight_layout(rect=[0, 0, 1, 0.90])
+
+        for _, r in df.iterrows():
+            types = r["types"]
+            main_type = r["main_type"]
+            color = MAINT_TYPE_COLORS.get(main_type, "#7f7f7f")
+
+            plt.barh(
+                y=r["voie"],
+                width=r["end"] - r["start"],
+                left=r["start"],
+                height=0.8,
+                color=color,
+                edgecolor="black"
+            )
+
+            # ---- label sur UNE ligne ----
+            label = f"{r['rame']} – " + " + ".join(
+                t.replace("_", " ") for t in types
+            )
+
+            plt.text(
+                (r["start"] + r["end"]) / 2,
+                r["voie"],
+                label,
+                ha="center",
+                va="center",
+                fontsize=7,
+                color="white",
+                zorder=4,
+                clip_on=False,  # 🔑 autorise à dépasser la barre
+                bbox=dict(
+                    facecolor="black",
+                    alpha=0.25,
+                    boxstyle="round,pad=0.2"
+                )
+            )
+
+        plt.yticks(range(1, max_voie + 1))
+        plt.xlabel("Heure")
+        plt.ylabel("Voie")
+        plt.xlim(0, 24)
+        plt.xticks(range(0, 25, 1))
+        
+
+        plt.suptitle(
+            f"Occupation des voies journée type – site de {site}",
+            fontsize=13,
+            y=0.97
+        )
+        ax = plt.gca()
+        ax.set_axisbelow(True)   # ⬅️ clé du problème
+        ax.grid(axis="x", linestyle="--", alpha=0.4)
+
+        legend_elements = [
+            Patch(
+                facecolor=color,
+                edgecolor="black",
+                label=label.replace("_", " ").title()
+            )
+            for label, color in MAINT_TYPE_COLORS.items()
+        ]
+
+        plt.legend(
+            handles=legend_elements,
+            title="Type de maintenance",
+            loc="upper right"
+        )
+
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+        plt.savefig(tmp.name, dpi=300)
+        plt.close()
+
+        # =========================
+        # 3) PDF – TITRE & TEXTE
+        # =========================
+        c.setFont("Helvetica-Bold", 16)
+        c.drawCentredString(
+            PAGE_WIDTH / 2,
+            PAGE_HEIGHT - 40,
+            f"Occupation des voies – {site}"
+        )
+
+        y = PAGE_HEIGHT - 80
+        c.setFont("Helvetica", 11)
+        for line in [
+            "Chaque barre horizontale représente une rame immobilisée sur une voie.",
+            "La longueur de la barre correspond à la durée d’occupation.",
+            "La couleur indique le type de maintenance effectué."
+        ]:
+            c.drawString(left, y, line)
+            y -= 14
+
+        # =========================
+        # 4) IMAGE
+        # =========================
+        img_width = PAGE_WIDTH - left - right
+        img_height = 300
+
+        c.drawImage(
+            tmp.name,
+            left,
+            PAGE_HEIGHT - 120 - img_height,
+            width=img_width,
+            height=img_height,
+            preserveAspectRatio=True
+        )
+
+        # =========================
+        # 5) INFOS GLOBALES
+        # =========================
+        y_info = PAGE_HEIGHT - 430
+        c.setFont("Helvetica", 11)
+        c.drawString(
+            left,
+            y_info,
+            f"Nombre maximal de voies occupées simultanément : {max_voie}"
+        )
+
+        # =========================
+        # 6) TABLEAU INFRA PAR VOIE
+        # =========================
+        
+        # =========================
+        # Construction infra par voie
+        # =========================
+        infra_by_voie = {}
+
+        for _, r in df.iterrows():
+            voie = r["voie"]
+            types = set(r.get("types", []))
+
+            if voie not in infra_by_voie:
+                infra_by_voie[voie] = set()
+
+            infra_by_voie[voie].update(types)
+
+        types_all = ["terre_plein", "toiture", "fosse", "verin_fosse"]
+
+        col_voie_w = 40
+        col_type_w = 70
+        row_h = 14
+
+        n_rows = max_voie + 1  # en-tête + voies
+        table_width = col_voie_w + len(types_all) * col_type_w
+
+        # Titre du tableau
+        table_y_start = y_info - 30
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(
+            left,
+            table_y_start,
+            "Récapitulatif des infrastructures nécessaires par voie"
+        )
+
+        # Géométrie du tableau
+        table_top = table_y_start - 15
+        table_bottom = table_top - n_rows * row_h
+
+        # =========================
+        # Grille
+        # =========================
+        c.setStrokeColor(colors.lightgrey)
+        c.setLineWidth(0.5)
+
+        # lignes horizontales
+        for i in range(n_rows + 1):
+            y_line = table_top - i * row_h
+            c.line(left, y_line, left + table_width, y_line)
+
+        # lignes verticales
+        x = left
+        c.line(x, table_top, x, table_bottom)
+
+        x += col_voie_w
+        c.line(x, table_top, x, table_bottom)
+
+        for _ in types_all:
+            x += col_type_w
+            c.line(x, table_top, x, table_bottom)
+
+        # =========================
+        # En-têtes
+        # =========================
+        c.setFont("Helvetica-Bold", 9)
+        y_header = table_top - row_h + 4
+
+        c.drawCentredString(
+            left + col_voie_w / 2,
+            y_header,
+            "Voie"
+        )
+
+        for i, t in enumerate(types_all):
+            c.drawCentredString(
+                left + col_voie_w + i * col_type_w + col_type_w / 2,
+                y_header,
+                t.replace("_", " ").title()
+            )
+
+        # =========================
+        # Contenu du tableau
+        # =========================
+        c.setFont("Helvetica", 9)
+
+        for voie in range(1, max_voie + 1):
+            y = table_top - (voie + 1) * row_h + 4
+
+            # numéro de voie
+            c.drawCentredString(
+                left + col_voie_w / 2,
+                y,
+                str(voie)
+            )
+
+            # infrastructures
+            for i, t in enumerate(types_all):
+                mark = "✓" if t in infra_by_voie.get(voie, set()) else ""
+                c.drawCentredString(
+                    left + col_voie_w + i * col_type_w + col_type_w / 2,
+                    y,
+                    mark
+                )
+
+        c.showPage()
+
+        try:
+            os.unlink(tmp.name)
+        except PermissionError:
+            pass
+
+    c.save()
+    print(f"📊 PDF occupation maintenance généré : {nom_pdf}")
+
+
+
+def normalize_axe_name(name: str) -> str:
+    """
+    Normalise un nom d'axe pour comparaison :
+    - minuscules
+    - suppression accents
+    - tirets uniformes
+    - pas d'espaces parasites
+    """
+    name = name.lower()
+    name = unicodedata.normalize("NFD", name)
+    name = "".join(c for c in name if unicodedata.category(c) != "Mn")
+    name = name.replace("–", "-").replace("—", "-")
+    name = re.sub(r"\s*-\s*", "-", name)
+    name = re.sub(r"\s+", "-", name)
+    return name.strip("-")
+
+
+def map_direction_pphpd(direction, axe):
+    direction = direction.lower()
+    axe_norm = normalize_axe_name(axe)
+
+    if axe_norm in AXES_OUEST:
+        return {
+            "province": "Marseille",
+            "paris": "Banlieue",
+        }.get(direction, direction.capitalize())
+
+    if axe_norm in AXES_EST:
+        return {
+            "province": "Banlieue",
+            "paris": "Marseille",
+        }.get(direction, direction.capitalize())
+
+    # Axe inconnu → fallback sûr
+    return direction.capitalize()
+
 
 # ------------------ Fonctions d'affectation ------------------
+
 def get_rame_id(nom_ligne: str):
     """Retourne un ID de rame en fonction du fichier de marches."""
+
     if nom_ligne == "marches_intervilles-marseille-lyon.json":
-        key = "R2N"
-    elif nom_ligne == "marches_marseille-toulon-hyeres-les-arcs-draguignan.json":
         key = "2NPG"
+
     elif nom_ligne == "marches_marseille-avignon.json":
         key = "2NPG"
+    
+    elif nom_ligne == "marches_marseille-avignon-via-rognac.json":
+        key = "2NPG"
+    
     elif nom_ligne == "marches_vallee-du-rhone.json":
-        key = "R2N"
-    elif nom_ligne == "marches_marseille-miramas-via-cote-bleue.json":
-        key = "REG"
-    else:
+        key = "2NPG"
+        
+    elif nom_ligne == "marches_marseille-briancon.json":
+        key = "BGC"
+        
+    elif nom_ligne == "marches_marseille-aubagne.json":
+        key= "REG"
+        
+    elif nom_ligne == "marches_marseille-aix-en-provence.json":
         key = "BGC" if parc["BGC"]["utilise"] < parc["BGC"]["quantite"] else "REG"
+
+    elif nom_ligne == "marches_marseille-miramas-via-cote-bleue.json":
+        key = "BGC" if parc["BGC"]["utilise"] < parc["BGC"]["quantite"] else "REG"
+        
+    elif nom_ligne == "marches_avignon-tgv-capentras.json":
+        key = "BGC" if parc["BGC"]["utilise"] < parc["BGC"]["quantite"] else "REG"
+
+    elif nom_ligne == "marches_marseille-toulon-hyeres-les-arcs-draguignan.json":
+            key = "REG" if parc["REG"]["utilise"] < parc["REG"]["quantite"] else "R2N" 
+
+    else:
+        # 🔹 Choisir n'importe quel type de rame disponible
+        key = None
+        for k, v in parc.items():
+            if v["utilise"] < v["quantite"]:
+                key = k
+                break
+
+        if key is None:
+            raise RuntimeError("Plus de rames disponibles dans le parc")
 
     if parc[key]["utilise"] >= parc[key]["quantite"]:
         raise RuntimeError(f"Plus de rames disponibles pour {parc[key]['modele']}")
@@ -67,6 +676,357 @@ def get_rame_id(nom_ligne: str):
     return rame_id
 
 
+def compute_maintenance_stats(df_assign_mat):
+    """
+    Calcule le total des heures de maintenance et le détail par site.
+    """
+    df_maint = df_assign_mat[
+        (df_assign_mat["axe"] == "MAINTENANCE") |
+        (df_assign_mat.get("type") == "MAINT")
+    ].copy()
+
+    if df_maint.empty:
+        return 0.0, {}
+
+    df_maint["duree_h"] = df_maint["arrivee"] - df_maint["depart"]
+
+    total_hours = df_maint["duree_h"].sum()
+
+    by_site = (
+        df_maint.groupby("gare_depart")["duree_h"]
+        .sum()
+        .to_dict()
+    )
+
+    return total_hours, by_site
+
+def draw_roulement_graph(
+    c,
+    cycles,
+    line_to_rame,
+    start_station,
+    end_station,
+    PAGE_WIDTH,
+    PAGE_HEIGHT,
+):
+    """
+    Dessine les cycles / chaînes de roulement sous forme de graphes lisibles.
+    - Cycle fermé → cercle
+    - Chaîne ouverte → demi-cercle
+    """
+
+    import numpy as np
+    from reportlab.lib import colors
+
+    c.showPage()
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(
+        PAGE_WIDTH / 2,
+        PAGE_HEIGHT - 40,
+        "Graphe des roulements",
+    )
+
+    
+
+    for idx, cycle in enumerate(cycles):
+
+        # ===== Nettoyage du cycle (pas de doublon final) =====
+        new_cycle = cycle
+        if len(cycle) > 1 and cycle[0] == cycle[-1]:
+            new_cycle = cycle[:-1]
+
+        n = len(new_cycle)
+        if n == 0:
+            continue
+        
+        center_x = PAGE_WIDTH / 2
+        if n>15:
+            start_y = PAGE_HEIGHT - 300
+        else:
+            start_y = PAGE_HEIGHT - 150
+        gap_y = 300
+        
+        # ===== Détection cycle fermé =====
+        is_closed_cycle = (
+            len(cycle) > 1 and cycle[0] == cycle[-1]
+        )
+
+        # ===== Position verticale =====
+        radius = max(60, 7 * n)
+        y = start_y - idx * gap_y
+
+        if y < 100:
+            c.showPage()
+            start_y = PAGE_HEIGHT - 150
+            y = start_y
+
+        # ===== Placement des sommets =====
+        points = []
+
+        for i, line_id in enumerate(new_cycle):
+            if is_closed_cycle:
+                angle = 2 * np.pi * i / n
+            else:
+                angle = np.pi * i / (n - 1 if n > 1 else 1)
+
+            x = center_x + radius * np.cos(angle)
+            yy = y + radius * np.sin(angle)
+            points.append((x, yy, line_id))
+
+        # ===== Arêtes =====
+        c.setStrokeColor(colors.darkblue)
+        c.setFont("Helvetica", 7)
+
+        # liaisons normales
+        for i in range(n - 1):
+            x1, y1, li = points[i]
+            x2, y2, lj = points[i + 1]
+            c.line(x1, y1, x2, y2)
+
+            rame_i = line_to_rame.get(li)
+            gare = end_station.get(rame_i, "")
+            gare = str(gare)
+
+            mx = (x1 + x2) / 2
+            my = (y1 + y2) / 2 + 6
+            c.drawCentredString(mx, my, gare)
+
+        # fermeture du cycle si nécessaire
+        if is_closed_cycle and n > 2:
+            x1, y1, li = points[-1]
+            x2, y2, lj = points[0]
+            c.line(x1, y1, x2, y2)
+
+            rame_i = line_to_rame.get(li)
+            gare = str(end_station.get(rame_i, ""))
+
+            mx = (x1 + x2) / 2
+            my = (y1 + y2) / 2 + 6
+            c.drawCentredString(mx, my, gare)
+
+        # ===== Sommets =====
+        for x, yy, line_id in points:
+            c.setFillColor(colors.lightblue)
+            c.circle(x, yy, 12, fill=1)
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica-Bold", 8)
+            c.drawCentredString(x, yy - 3, str(line_id))
+
+        # ===== Label =====
+        label_cycle = (
+            new_cycle + [new_cycle[0]]
+            if is_closed_cycle
+            else new_cycle
+        )
+
+        c.setFont("Helvetica", 9)
+        c.drawCentredString(
+            center_x,
+            y - radius - 25,
+            f"Roulement {idx + 1}"
+        )
+
+def generate_kpi_pdf_from_df(df_assign_global, output_pdf="KPI_exploitation.pdf"):
+    PAGE_WIDTH, PAGE_HEIGHT = A4
+    LEFT = 40
+    RIGHT = PAGE_WIDTH - 40
+
+    c = canvas.Canvas(output_pdf, pagesize=A4)
+
+    # ===================== PRÉPARATION =====================
+    df = df_assign_global.copy()
+
+    is_maint = df["axe"].astype(str).str.upper().str.contains("MAINT")
+    is_hlp = df["vide_voyageur"] == True
+
+    df_clean = df[~is_maint]
+
+    # ----------------- KM -----------------
+    total_km = df_clean["distance_km"].sum()
+    km_hlp = df_clean.loc[is_hlp, "distance_km"].sum()
+    taux_hlp = 100 * km_hlp / total_km if total_km > 0 else 0
+    taux_vv = 100 - taux_hlp
+
+    km_par_axe = (
+        df_clean.groupby("axe")["distance_km"]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+    km_par_materiel = (
+        df_clean.groupby("materiel")["distance_km"]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+    km_par_rame = df_clean.groupby("rame")["distance_km"].sum()
+    km_moyen_rame = km_par_rame.mean()
+    km_std_rame = km_par_rame.std()
+    top_rames = km_par_rame.sort_values(ascending=False).head(6)
+
+    # ----------------- MARCHES -----------------
+    nb_marches_move = (df["type"] == "MOVE").sum()
+
+    # ----------------- MAINTENANCE -----------------
+    maint_by_type = defaultdict(float)
+
+    df_maint = df[df["type"] == "MAINT"].copy()
+    if not df_maint.empty:
+        df_maint["duree_h"] = df_maint["arrivee"] - df_maint["depart"]
+
+        for _, row in df_maint.iterrows():
+            types = row.get("types", [])
+            if not types:
+                maint_by_type["non_specifie"] += row["duree_h"]
+            else:
+                for t in types:
+                    maint_by_type[t] += row["duree_h"]
+
+    total_maint_hours = sum(maint_by_type.values())
+
+    # ----------------- TAUX D’UTILISATION -----------------
+    WINDOW_START = 5.5
+    WINDOW_END = 22.5
+    WINDOW_DURATION = WINDOW_END - WINDOW_START
+
+    df_voy = df[
+        (~df["vide_voyageur"]) &
+        (~df["axe"].astype(str).str.upper().str.contains("MAINT"))
+    ].copy()
+
+    df_voy["depart_clip"] = df_voy["depart"].clip(WINDOW_START, WINDOW_END)
+    df_voy["arrivee_clip"] = df_voy["arrivee"].clip(WINDOW_START, WINDOW_END)
+    df_voy["duree_fenetre"] = (
+        df_voy["arrivee_clip"] - df_voy["depart_clip"]
+    ).clip(lower=0)
+
+    df_util_rame = (
+        df_voy.groupby("rame")["duree_fenetre"]
+        .sum()
+        .reset_index()
+    )
+
+    df_util_rame["taux_utilisation"] = (
+        df_util_rame["duree_fenetre"] / WINDOW_DURATION * 100
+    )
+
+    # rattachement matériel
+    rame_to_mat = df[["rame", "materiel"]].drop_duplicates()
+    df_util_rame = df_util_rame.merge(rame_to_mat, on="rame", how="left")
+
+    taux_util_global = df_util_rame["taux_utilisation"].mean()
+
+    taux_util_par_mat = (
+        df_util_rame.groupby("materiel")["taux_utilisation"]
+        .mean()
+        .sort_values(ascending=False)
+    )
+
+    # ===================== TITRE =====================
+    c.setFont("Helvetica-Bold", 18)
+    c.drawCentredString(
+        PAGE_WIDTH / 2, PAGE_HEIGHT - 30,
+        "KPI d’exploitation – Synthèse journalière"
+    )
+
+    y = PAGE_HEIGHT - 65
+
+    # ===================== KPI GLOBAUX =====================
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(LEFT, y, "Indicateurs globaux")
+    y -= 16
+
+    c.setFont("Helvetica", 10)
+    global_kpi = [
+        f"• Kilomètres parcourus : {int(total_km):,} km",
+        f"   - Part avec voyageurs : {taux_vv:.1f} %",
+        f"   - Part en VV : {taux_hlp:.1f} %",
+        f"• Nombre de marches : {nb_marches_move}",
+        f"• Taux moyen d’utilisation (global) : {taux_util_global:.1f} % (part du temps un train est en service comercial de 5h30 à 22h30)",
+        f"• Kilomètres moyens par rame : {int(km_moyen_rame):,} km",
+        f"• Dispersion km par rame (σ) : {int(km_std_rame):,} km",
+    ]
+
+    for l in global_kpi:
+        c.drawString(LEFT + 10, y, l)
+        y -= 13
+
+    y -= 6
+
+    # ===================== UTILISATION PAR MATÉRIEL =====================
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(LEFT, y, "Taux moyen d’utilisation par matériel")
+    y -= 14
+
+    c.setFont("Helvetica", 9)
+    for mat, taux in taux_util_par_mat.items():
+        c.drawString(LEFT + 10, y, mat)
+        c.drawRightString(RIGHT, y, f"{taux:.1f} %")
+        y -= 11
+
+    y -= 6
+
+    # ===================== MAINTENANCE =====================
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(LEFT, y, "Maintenance – heures cumulées")
+    y -= 14
+
+    c.setFont("Helvetica", 9)
+    c.drawString(LEFT + 10, y, f"Total maintenance : {total_maint_hours:.1f} h")
+    y -= 12
+
+    for t, h in sorted(maint_by_type.items()):
+        c.drawString(
+            LEFT + 20, y,
+            f"- {t.replace('_', ' ').title()} : {h:.1f} h"
+        )
+        y -= 11
+
+    y -= 6
+
+    # ===================== KM PAR AXE =====================
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(LEFT, y, "Kilomètres parcourus par axe")
+    y -= 14
+
+    c.setFont("Helvetica", 9)
+    for axe, km in km_par_axe.items():
+        if y < 140:
+            break
+        c.drawString(LEFT + 10, y, axe)
+        c.drawRightString(RIGHT, y, f"{int(km):,} km")
+        y -= 11
+
+    y -= 6
+
+    # ===================== KM PAR MATÉRIEL =====================
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(LEFT, y, "Kilomètres parcourus par matériel")
+    y -= 14
+
+    c.setFont("Helvetica", 9)
+    for mat, km in km_par_materiel.items():
+        c.drawString(LEFT + 10, y, mat)
+        c.drawRightString(RIGHT, y, f"{int(km):,} km")
+        y -= 11
+
+    y -= 6
+
+    # ===================== TOP RAMES =====================
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(LEFT, y, "Rames les plus sollicitées")
+    y -= 14
+
+    c.setFont("Helvetica", 9)
+    for rame, km in top_rames.items():
+        c.drawString(LEFT + 10, y, f"Rame {rame}")
+        c.drawRightString(RIGHT, y, f"{int(km):,} km")
+        y -= 11
+
+    # ===================== FIN =====================
+    c.save()
+    print(f"📄 PDF KPI (1 page avec taux d’utilisation) généré : {output_pdf}")
+    
 def navette_mat(rame_id, gare_dep, depart, tampon, navette_time):
     navette_dict = {
         "MSC": {"gare_depart": "MBC", "gare_arrivee": "MSC"},
@@ -95,6 +1055,7 @@ def navette_mat(rame_id, gare_dep, depart, tampon, navette_time):
         "gare_arrivee": info["gare_arrivee"],
         "arrivee": depart - tampon,
         "vide_voyageur": True,
+        "type": "MOVE"
     }
 
 
@@ -124,6 +1085,7 @@ def navette_soir(rame_id, gare_dep, dispo):
         "gare_arrivee": mapping[gare_dep],
         "arrivee": dispo + tampon_15m + navette_time,
         "vide_voyageur": True,
+        "type":"MOVE"
     }
 
 
@@ -158,6 +1120,7 @@ def gestion_evo(rame_id, gare_dep, depart, state, assignments):
             "gare_arrivee": gare_navette,
             "arrivee": state["dispo"] + navette_time + tampon_15m,
             "vide_voyageur": True,
+            "type": "MOVE"
         }
     )
 
@@ -170,6 +1133,7 @@ def gestion_evo(rame_id, gare_dep, depart, state, assignments):
             "gare_arrivee": gare_dep,
             "arrivee": depart - tampon_15m,
             "vide_voyageur": True,
+            "type": "MOVE"
         }
     )
 
@@ -178,11 +1142,14 @@ def gestion_evo(rame_id, gare_dep, depart, state, assignments):
 
 
 # ------------------ Calcul PPHPD ------------------
-def calcul_pphpd_par_direction(df_assign, parc):
+def calcul_pphpd_par_direction(df_assign, parc, axe):
     """
     PPHPD avec règle :
       - avant 12h = basé sur l'heure d'arrivée
       - après 12h = basé sur l'heure de départ
+
+    Directions finales :
+      - Marseille / Banlieue (selon l'axe)
     """
     resultats = []
 
@@ -215,19 +1182,25 @@ def calcul_pphpd_par_direction(df_assign, parc):
                 except Exception:
                     continue
 
-                # Direction via numéro pair/impair
+                # Direction ferroviaire pair / impair
                 if (num % 2 == 0 and direction == "Paris") or (
                     num % 2 == 1 and direction == "Province"
                 ):
-
                     rame = row["rame"]
-                    for key, info in parc.items():
+                    for info in parc.values():
                         if info["numero"] <= rame < info["numero"] + info["quantite"]:
                             capacite_totale += info["places"]
                             break
 
+            # 🔁 Mapping final Paris/Province → Marseille/Banlieue
+            direction_finale = map_direction_pphpd(direction, axe)
+
             resultats.append(
-                {"heure": h, "direction": direction, "pphpd": capacite_totale}
+                {
+                    "heure": h,
+                    "direction": direction_finale,
+                    "pphpd": capacite_totale,
+                }
             )
 
     return pd.DataFrame(resultats)
@@ -251,7 +1224,7 @@ HEURE_MIN = 0
 HEURE_MAX = 24
 ECHELLE_HEURE = (PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN) / (HEURE_MAX - HEURE_MIN)
 
-# Fenêtre de référence pour la performance (en heure décimale)
+# Fenêtre de référence pour le taux d'utilisation (en heure décimale)
 WINDOW_START = 5.5   # 5h30
 WINDOW_END   = 22.5  # 22h30
 WINDOW_DURATION = WINDOW_END - WINDOW_START  # 17h
@@ -326,8 +1299,7 @@ else:
 
 
 def get_distance_safe(row):
-    if row.get("vide_voyageur", False):
-        return 0
+    
     try:
         return km_dict[(row["gare_depart"], row["gare_arrivee"])]
     except KeyError:
@@ -349,7 +1321,7 @@ def get_materiel_code_from_rame(rame_id):
 
 
 # ------------------ Page paramètres ------------------
-def draw_params_page(c, materiel_code, titre_suffix):
+def draw_params_page(c, materiel_code, titre_suffix, total_maint_hours, maint_by_site):
     """Ajoute une page récap avec les paramètres de l'algo d'attribution + flux pour ce matériel."""
     global FLUX_PAR_AXE
 
@@ -374,10 +1346,6 @@ def draw_params_page(c, materiel_code, titre_suffix):
     y -= line_height
     c.drawString(LEFT_MARGIN, y, f"• Seuil atelier (évolution) : {seuil_atelier:.3f} h (~{int(seuil_atelier*60)} min)")
     y -= line_height
-    c.drawString(LEFT_MARGIN, y, f"• Tampon général : {tampon:.3f} h (~{int(tampon*60)} min)")
-    y -= line_height
-    c.drawString(LEFT_MARGIN, y, f"• Tampon 15 min : {tampon_15m:.3f} h (~{int(tampon_15m*60)} min)")
-    y -= line_height
     c.drawString(LEFT_MARGIN, y, f"• Durée navette (HLP dépôt↔gare) : {navette_time:.3f} h (~{int(navette_time*60)} min)")
     y -= line_height
 
@@ -390,15 +1358,13 @@ def draw_params_page(c, materiel_code, titre_suffix):
     c.setFont("Helvetica", 9)
     c.drawString(LEFT_MARGIN, y, f"• Plage horaire affichée : {HEURE_MIN}h → {HEURE_MAX}h")
     y -= line_height
-    c.drawString(LEFT_MARGIN, y, f"• Offset premier label gare : {FIRST_LABEL_OFFSET} pts")
-    y -= line_height
     c.drawString(LEFT_MARGIN, y, "• Affichage minutes uniquement pour les heures de départ / arrivée")
     y -= line_height
 
-    # --- Indicateur de performance ---
+    # --- Indicateur d'utilisation ---
     y -= line_height // 2
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(LEFT_MARGIN, y, "Indicateur de performance :")
+    c.drawString(LEFT_MARGIN, y, "Indicateur d'utilisation :")
     y -= line_height
 
     c.setFont("Helvetica", 9)
@@ -521,6 +1487,33 @@ def draw_params_page(c, materiel_code, titre_suffix):
             y -= row_h
 
         y -= row_h  # espace entre axes
+    # --- Maintenance ---
+    y -= line_height
+    if y < BOTTOM_MARGIN + 60:
+        c.showPage()
+        y = PAGE_HEIGHT - TOP_MARGIN
+
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(LEFT_MARGIN, y, "Maintenance programmée")
+    y -= line_height
+
+    c.setFont("Helvetica", 9)
+    c.drawString(
+        LEFT_MARGIN,
+        y,
+        f"• Total maintenance : {total_maint_hours:.1f} h"
+    )
+    y -= line_height
+
+    if maint_by_site:
+        for site, h in maint_by_site.items():
+            c.drawString(
+                LEFT_MARGIN + 10,
+                y,
+                f"- {site} : {h:.1f} h"
+            )
+            y -= line_height
+
 
 
 # ------------------ PDF par matériel ------------------
@@ -528,8 +1521,11 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
     """
     Génère un PDF pour un type de matériel donné (R2N, BGC, REG, 2NPG).
     """
-    if df_assign_mat.empty:
-        return
+    
+    # ================== SÉPARATION RAMES UTILISÉES / INUTILISÉES ==================
+    rame_list_used, rames_inutilisees = split_used_and_unused_rames(
+        df_assign_mat, materiel_code, parc
+    )
 
     # --- Liste complète des rames du matériel (utilisées + inutilisées) ---
     info = parc[materiel_code]
@@ -537,8 +1533,6 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
     dernier = info["numero"] + info["quantite"] - 1
     all_rames = list(range(premier, dernier + 1))
 
-    rames_utilisees = sorted(df_assign_mat["rame"].unique())
-    rames_inutilisees = [r for r in all_rames if r not in rames_utilisees]
 
     # Ajouter des lignes pour rames inutilisées
     lignes_vides = []
@@ -563,7 +1557,10 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
         df_assign_mat = pd.concat([df_assign_mat, df_vides], ignore_index=True)
 
     # Rame list complète
-    rame_list = sorted(df_assign_mat["rame"].unique())
+    rame_list = sorted(
+        set(rame_list_used) | set(rames_inutilisees)
+    )
+
 
     nom_pdf = f"roulements_{materiel_code}.pdf"
     c = canvas.Canvas(nom_pdf, pagesize=A4)
@@ -603,40 +1600,87 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
 
         for j, rame_j in enumerate(rame_list):
             lj = j + 1
-            if end_i is not None and start_station.get(rame_j) == end_i and li != lj:
+            if li != lj and end_i is not None and start_station.get(rame_j) == end_i:
                 compatible[li].append(lj)
 
-        if not compatible[li]:
-            compatible[li].append(li)
+    # ================== MATCHING MAXIMUM ==================
+    def strongly_connected_components(graph):
+        index = 0
+        stack = []
+        indices = {}
+        lowlink = {}
+        onstack = set()
+        result = []
 
+        def visit(v):
+            nonlocal index
+            indices[v] = index
+            lowlink[v] = index
+            index += 1
+            stack.append(v)
+            onstack.add(v)
+
+            for w in graph.get(v, []):
+                if w not in indices:
+                    visit(w)
+                    lowlink[v] = min(lowlink[v], lowlink[w])
+                elif w in onstack:
+                    lowlink[v] = min(lowlink[v], indices[w])
+
+            if lowlink[v] == indices[v]:
+                comp = []
+                while True:
+                    w = stack.pop()
+                    onstack.remove(w)
+                    comp.append(w)
+                    if w == v:
+                        break
+                result.append(comp)
+
+        for v in graph:
+            if v not in indices:
+                visit(v)
+        return result
+
+
+    sccs = strongly_connected_components(compatible)
+
+    # chaque SCC = un roulement
+    roulements = [sorted(comp) for comp in sccs]
+
+
+    # ================== gestion cycle ==================
+    cycles = []
+
+    for r in roulements:
+            cycles.append(r + [r[0]])  # cycle fermé
+
+            
     next_line = {}
-    matchR = {}
+    prev_line = {}
 
-    def dfs_match(i, seen):
-        for j in compatible[i]:
-            if j in seen:
-                continue
-            seen.add(j)
-            if j not in matchR or dfs_match(matchR[j], seen):
-                matchR[j] = i
-                return True
-        return False
+    for cycle in cycles:
+        if len(cycle) < 2:
+            continue
 
-    for i in range(1, nb_rames + 1):
-        dfs_match(i, set())
+        # cycle fermé : [1,2,3,1]
+        if cycle[0] == cycle[-1]:
+            nodes = cycle[:-1]
+            for i in range(len(nodes)):
+                a = nodes[i]
+                b = nodes[(i + 1) % len(nodes)]
+                next_line[a] = b
+                prev_line[b] = a
 
-    for j, i in matchR.items():
-        next_line[i] = j
+        # chaîne ouverte : [1,2,3]
+        else:
+            for i in range(len(cycle) - 1):
+                a = cycle[i]
+                b = cycle[i + 1]
+                next_line[a] = b
+                prev_line[b] = a
 
-    for i in range(1, nb_rames + 1):
-        if i not in next_line:
-            next_line[i] = (i % nb_rames) + 1
-
-    prev_line = {i: i for i in range(1, nb_rames + 1)}
-    for i, j in next_line.items():
-        prev_line[j] = i
-
-    # Performance
+    # utlisation
     df_voy = df_assign_mat[~df_assign_mat["vide_voyageur"]].copy()
     if not df_voy.empty:
         df_voy["depart_clip"] = df_voy["depart"].clip(lower=WINDOW_START, upper=WINDOW_END)
@@ -650,6 +1694,28 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
         )
     else:
         df_perf_par_rame = pd.DataFrame(columns=["rame", "duree_fenetre", "taux_utilisation"])
+    # ================== AJOUT VISUEL DES RAMES INUTILISÉES ==================
+    lignes_vides = []
+    for rame in rames_inutilisees:
+        gare_dodo = DEPOT_AFFECTATION.get(materiel_code, "MBC")
+        lignes_vides.append({
+            "rame": rame,
+            "marche": None,
+            "gare_depart": gare_dodo,
+            "depart": None,
+            "gare_arrivee": gare_dodo,
+            "arrivee": None,
+            "vide_voyageur": False,
+            "distance_km": 0,
+            "axe": "Non utilisée",
+            "gare_dortoir": gare_dodo
+        })
+
+    if lignes_vides:
+        df_assign_mat = pd.concat(
+            [df_assign_mat, pd.DataFrame(lignes_vides)],
+            ignore_index=True
+        )
 
     # Dessin des rames
     y_start = PAGE_HEIGHT - TOP_MARGIN
@@ -677,10 +1743,10 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
 
         # ---- Roulement ----
         ligne_auj = rame_to_line[rame]
-        ligne_demain = next_line[ligne_auj]
-        ligne_hier = prev_line[ligne_auj]
+        ligne_demain = next_line.get(ligne_auj)
 
-        axe_label = " / ".join(sous_df["axe"].dropna().unique()) or "axe inconnu"
+        ligne_hier = prev_line.get(ligne_auj)
+
         texte_roulement = f"{ligne_hier} ➜ {ligne_auj} ➜ {ligne_demain}"
 
         # Cadre
@@ -689,6 +1755,14 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
                PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN,
                RAME_HEIGHT)
 
+
+        axe_label = " / ".join(
+            sous_df.loc[
+                ~sous_df["axe"].fillna("").str.contains("maintenance", case=False),
+                "axe"
+            ].unique()
+        ) or "axe inconnu"
+        
         # Titre rame + axe
         c.setFont("Helvetica-Bold", 5)
         c.setFillColor(colors.magenta)
@@ -696,7 +1770,7 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
         c.setFillColor(colors.green)
         c.drawString(LEFT_MARGIN + 30, cadre_bottom + 4, axe_label)
 
-        # Performance
+        # utilisation
         perf_row = df_perf_par_rame.loc[df_perf_par_rame["rame"] == rame]
         if not perf_row.empty:
             perf_val = perf_row["taux_utilisation"].values[0]
@@ -704,7 +1778,7 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
             c.setFillColor(colors.green)
             c.drawRightString(PAGE_WIDTH - RIGHT_MARGIN - 6,
                               cadre_bottom + 4,
-                              f"Perf : {perf_val:.0f}%")
+                              f"Utilisation : {perf_val:.0f}%")
             c.setFillColor(colors.black)
 
         # Km total
@@ -719,21 +1793,45 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
         # === RAME INUTILISÉE ===
         if sous_df["marche"].isna().all():
             gare_dodo = sous_df.iloc[0]["gare_dortoir"]
-            c.setFont("Helvetica-Bold", 10)
+
+            # Fond gris léger
+            c.setFillColor(colors.whitesmoke)
+            c.rect(
+                LEFT_MARGIN + 1,
+                cadre_bottom + 1,
+                PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN - 2,
+                RAME_HEIGHT - 2,
+                stroke=0,
+                fill=1
+            )
+
+            # Texte principal
+            c.setFont("Helvetica-Bold", 11)
+            c.setFillColor(colors.red)
+            c.drawCentredString(
+                (LEFT_MARGIN + PAGE_WIDTH - RIGHT_MARGIN) / 2,
+                y_line + 6,
+                f"{materiel_code} garé - Réserve"
+            )
+
+            # Texte secondaire
+            c.setFont("Helvetica", 8)
             c.setFillColor(colors.darkgray)
             c.drawCentredString(
                 (LEFT_MARGIN + PAGE_WIDTH - RIGHT_MARGIN) / 2,
-                y_line + 5,
-                f"Rame garée à : {gare_dodo}"
+                y_line - 6,
+                f"Garage : {gare_dodo} "
             )
+
+            c.setFillColor(colors.black)
+
             y_start -= (RAME_HEIGHT + ESPACEMENT_RAME)
             rame_counter += 1
             continue
+
         # =======================
 
-        # Ligne centrale
         c.setStrokeColor(colors.black)
-        #c.line(LEFT_MARGIN, y_line, PAGE_WIDTH - RIGHT_MARGIN, y_line)
 
         # Traits horaires
         c.setFont("Helvetica", 4)
@@ -754,53 +1852,70 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
         prev_arrivee = None
         premiere_marche = True
 
-        for _, row in sous_df.iterrows():
+        for _, marche in sous_df.iterrows():
             # ===== Détection UM pour cette marche =====
-            marche = row["marche"]
-            um_list = um_by_marche.get(marche, [])
-            is_um = len(um_list) >= 2
-            is_current_lead = (is_um and rame == um_list[0])
+            nb_marche = marche["marche"]
+            um_list = um_by_marche.get(nb_marche, [])
+            um_len = len(um_list)
+            is_us = um_len == 1
+            is_um2 = um_len == 2
+            is_um3 = um_len >= 3
+            
+            if len(um_list) >= 2 and rame in um_list:
+                position_um = um_list.index(rame)   # 0, 1, 2, ...
+            else:
+                position_um = None                  # US
             # ==========================================
 
-            x1 = x_from_time(row["depart"])
-            x2 = x_from_time(row["arrivee"])
+            x1 = x_from_time(marche["depart"])
+            x2 = x_from_time(marche["arrivee"])
+            gare_dep = str(marche["gare_depart"])
+            gare_arr = str(marche["gare_arrivee"])
+            heure_dep = format_time_hm(marche["depart"])
+            heure_arr = format_time_hm(marche["arrivee"])
 
             if x2 < LEFT_MARGIN:
                 continue
             if x1 > PAGE_WIDTH - RIGHT_MARGIN:
                 continue
-
+            
+            
             x1 = max(x1, LEFT_MARGIN + 2)
             x2 = min(x2, PAGE_WIDTH - RIGHT_MARGIN - 2)
 
-            if row.get("vide_voyageur", True):
+            if marche.get("vide_voyageur", True):
                 bar_color = colors.lightgrey
             else:
                 bar_color = colors.black
             # ===== Choix épaisseur selon UM =====
-            if is_um:
-                if is_current_lead:
+            if is_us:
+                draw_train_bar(c, x1, x2, y_line, height=5, color=bar_color) # Cas normal
+            elif is_um2:
+                if position_um == 0:
                     draw_train_bar(c, x1, x2, y_line+ 1.5, height=3, color=bar_color)
                     draw_train_bar(c, x1, x2, y_line- 2, height=0.75, color=bar_color)
-                else:
+                elif position_um ==1:
                     draw_train_bar(c, x1, x2, y_line+ 2, height=0.75, color=bar_color)
                     draw_train_bar(c, x1, x2, y_line- 1.5, height=3, color=bar_color)
-            else:
-                    draw_train_bar(c, x1, x2, y_line, height=5, color=bar_color) # Cas normal
+            elif is_um3:
+                if position_um == 0:
+                    draw_train_bar(c, x1, x2, y_line + 2.25, height=3, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line -0.5,     height=0.75, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line - 2, height=0.75, color=bar_color)
+                elif position_um == 1:
+                    draw_train_bar(c, x1, x2, y_line + 3, height=0.75, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line,     height=3, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line - 3, height=0.75, color=bar_color)
+                elif position_um == 2:
+                    draw_train_bar(c, x1, x2, y_line + 2, height=0.75, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line +0.5,     height=0.75, color=bar_color)
+                    draw_train_bar(c, x1, x2, y_line - 2.25, height=3, color=bar_color)
 
-            # if row.get("vide_voyageur", False):
-            #     # === HLP → ligne ondulée ===
-            #     draw_wave_bar(c, x1, x2, y_line, amplitude=2, wavelength=8, color=colors.lightgrey)
-            # else:
-            #     # === Marche voyageurs → barre normale ===
-            #     draw_train_bar(c, x1, x2, y_line, height=5, color=colors.black)
 
-            # ====================================
-
-            gare_dep = str(row["gare_depart"])
-            gare_arr = str(row["gare_arrivee"])
-            heure_dep = format_time_hm(row["depart"])
-            heure_arr = format_time_hm(row["arrivee"])
+            gare_dep = str(marche["gare_depart"])
+            gare_arr = str(marche["gare_arrivee"])
+            heure_dep = format_time_hm(marche["depart"])
+            heure_arr = format_time_hm(marche["arrivee"])
 
             depart_label_deja_fait = False
             c.setFillColor(colors.black)
@@ -844,27 +1959,36 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
             # --- Numéro de marche ---
             c.setFont("Helvetica", 5)
             c.setFillColor(colors.darkgray)
-            marche=str(row["marche"])
-            if "EVM" in marche or "EVO" in marche or "EVI" in marche or "EVS" in marche:
+            
+            if str(nb_marche).startswith("MAINT"):
+                types = marche.get("types", [])
+                if types:
+                    types_txt = " / ".join(t.replace("_", " ") for t in types)
+                    marche_text = f"{nb_marche}\n{types_txt}"
+                else:
+                    marche_text = str(nb_marche)
+
+            elif str(nb_marche).startswith(("EVM", "EVO", "EVI", "EVS")):
                 marche_text = "HLP"
             else:
-                marche_text = str(row["marche"])
-            y_num = y_line + (12 if row.get("vide_voyageur", False) else 7)
+                marche_text = str(nb_marche)
+
+            y_num = y_line + (12 if marche.get("vide_voyageur", False) else 7)
             c.drawCentredString((x1 + x2) / 2, y_num, marche_text)
 
             # --- Affichage des écarts trop courts ---
             if prev_arrivee is not None:
-                ecart = row["depart"] - prev_arrivee
+                ecart = marche["depart"] - prev_arrivee
                 if ecart < 0.333:
                     minutes = int(round(ecart * 60))
-                    milieu = (row["depart"] + prev_arrivee) / 2
+                    milieu = (marche["depart"] + prev_arrivee) / 2
                     xm = x_from_time(milieu)
                     c.setFont("Helvetica-Bold", 4)
                     c.setFillColor(colors.red)
                     c.drawCentredString(xm, y_line, f"{minutes}")
                     c.setFillColor(colors.black)
 
-            prev_arrivee = row["arrivee"]
+            prev_arrivee = marche["arrivee"]
             prev_node = {"gare": gare_arr, "x": x2, "heure": heure_arr}
             premiere_marche = False
 
@@ -884,9 +2008,27 @@ def draw_pdf_for_material(df_assign_mat, materiel_code):
 
         y_start -= (RAME_HEIGHT + ESPACEMENT_RAME)
         rame_counter += 1
+    line_to_rame = {v: k for k, v in rame_to_line.items()}
+
+    draw_roulement_graph(
+    c,
+    cycles,
+    line_to_rame,
+    start_station,
+    end_station,
+    PAGE_WIDTH,
+    PAGE_HEIGHT,
+    )
+    total_maint_hours, maint_by_site = compute_maintenance_stats(df_assign_mat)
 
     # Dernière page : paramètres
-    draw_params_page(c, materiel_code, f"Matériel {materiel_code}")
+    draw_params_page(
+        c,
+        materiel_code,
+        f"Matériel {materiel_code}",
+        total_maint_hours,
+        maint_by_site
+    )
     c.save()
     print(f"PDF généré : {nom_pdf}")
 
@@ -956,7 +2098,8 @@ def process_and_generate():
                 "depart": train["depart"],
                 "gare_arrivee": train["gare_arrivee"],
                 "arrivee": train["arrivee"],
-                "vide_voyageur": train.get("vide_voyageur", False)
+                "vide_voyageur": train.get("vide_voyageur", False),
+                "type": "MOVE"
             })
 
             rame_state[candidate]["gare"] = train["gare_arrivee"]
@@ -993,7 +2136,7 @@ def process_and_generate():
             "materiels": sorted(df_assign_file["materiel"].dropna().unique().tolist()),
         }
 
-        pphpd_par_axe[axe_label] = calcul_pphpd_par_direction(df_assign_file, parc)
+        pphpd_par_axe[axe_label] = calcul_pphpd_par_direction(df_assign_file, parc,axe_label)
 
     # Si aucune marche
     if not all_assignments:
@@ -1006,36 +2149,61 @@ def process_and_generate():
     df_assign_global["vide_voyageur"] = df_assign_global["vide_voyageur"].astype("boolean").fillna(False)
     df_assign_global["distance_km"] = df_assign_global.apply(get_distance_safe, axis=1)
     df_assign_global["materiel"] = df_assign_global["rame"].apply(get_materiel_code_from_rame)
+    
+    # ================== TOTAL KM PAR AXE ==================
+
+    print("\n🚆 Total des kilomètres effectués par axe (hors HLP / maintenance)")
+
+    df_km_par_axe = (
+        df_assign_global[
+            (~df_assign_global["vide_voyageur"]) &
+            (df_assign_global["axe"] != "MAINTENANCE")
+        ]
+        .groupby("axe")["distance_km"]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+    for axe, km in df_km_par_axe.items():
+        print(f"• {axe} : {int(km)} km")
+
+    print("──────────────────────────────────────────")
+    print(f"TOTAL RÉSEAU : {int(df_km_par_axe.sum())} km\n")
+
+    df_assign_global.to_csv("df_assign_global.csv", index=False, encoding="utf-8")
+
+
 
     # ------------------ 2) AFFECTATION DES MAINTENANCES (mimique des trains) ------------------
 
     maintenance_rows = []
-
+        
     for code in parc.keys():
-
+        cpt = 1
         df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
-        if df_mat.empty:
-            continue
+        
 
         if code not in maintenance_data:
             continue
 
         slots = maintenance_data[code]["slots"]
 
-        # état dynamique des rames comme pour les trains
+        # état dynamique des rames
         rame_state = {}
 
-        # initialisation état rame + leurs marches existantes
+        # planning initial par rame
         rame_timetable = {}
         for rame, grp in df_mat.groupby("rame"):
             grp = grp.sort_values("depart")
-            rame_timetable[rame] = grp[["depart", "arrivee", "gare_arrivee"]].to_dict("records")
+            rame_timetable[rame] = grp[
+                ["gare_depart", "depart", "arrivee", "gare_arrivee"]
+            ].to_dict("records")
             rame_state[rame] = {
                 "gare": grp.iloc[-1]["gare_arrivee"],
                 "dispo": grp.iloc[-1]["arrivee"]
             }
 
-        # tri des slots du plus long au plus court
+        # slots du plus long au plus court
         slots = sorted(slots, key=lambda s: -s["duration_minutes"])
 
         for slot in slots:
@@ -1044,61 +2212,144 @@ def process_and_generate():
             location = slot["location"]
 
             placed = False
-
-            # Essayer chaque rame disponible
             for rame_id in sorted(rame_state.keys()):
                 timetable = rame_timetable[rame_id]
+                # dernier état réel de la rame
+                last_ev = max(timetable, key=lambda x: x["arrivee"])
+                end_of_day_gare = last_ev["gare_arrivee"]
+                end_of_day_time = last_ev["arrivee"]
 
-                # Filtrer uniquement les événements dans la fenêtre
-                events = [(win_start, win_start, location)]  # borne début
+                real_start_gare = None
+
+                sorted_tt = sorted(timetable, key=lambda x: x["arrivee"])
+
+                for ev in sorted_tt:
+                    if ev["arrivee"] <= win_start:
+                        real_start_gare = ev["gare_arrivee"]
+
+                if real_start_gare is None:
+                    if sorted_tt:
+                        real_start_gare = sorted_tt[0]["gare_depart"]
+                    else:
+                        continue  # aucune info fiable → on refuse la rame
+
+
+                # ============================================================
+                # 2️⃣ Construire UNIQUEMENT les événements RÉELS dans la fenêtre
+                # ============================================================
+                events = []
+
+                # événements réels dans la fenêtre
                 for ev in timetable:
-                    if ev["depart"] <= win_end and ev["arrivee"] >= win_start:
+                    if ev["depart"] < win_end and ev["arrivee"] > win_start:
                         events.append((ev["depart"], ev["arrivee"], ev["gare_arrivee"]))
-                events.append((win_end, win_end, location))  # borne fin
+
+                # point AVANT la fenêtre
+                events.insert(0, (win_start, win_start, real_start_gare))
+
+                # 🔴 POINT CLÉ : après la dernière marche
+                if end_of_day_time < win_end:
+                    events.append((end_of_day_time, win_end, end_of_day_gare))
+
                 events = sorted(events)
 
-                # Essayer de trouver un trou
-                for i in range(len(events) - 1):
-                    end_prev = events[i][1] + 1   # tampon 1h après
-                    start_next = events[i+1][0] - 1 # tampon 1h avant
 
-                    free_start = max(end_prev, win_start)
-                    free_end   = min(start_next, win_end)
+                # Point virtuel de départ (position réelle)
+                events = [(win_start, win_start, real_start_gare)] + events
 
-                    if free_end - free_start >= duration:
+                # ============================================================
+                # 3️⃣ Recherche d’un trou compatible
+                # ============================================================
+                # Cas spécial : aucune marche dans la fenêtre → trou total
+                if len(events) == 1:
+                    last_gare = events[0][2]
 
-                        # vérifier que la rame est dans la bonne gare dans ce trou
-                        # gare = arrivée du dernier évènement valable
-                        last_gare = events[i][2]
-                        if last_gare != location:
-                            continue
+                    if last_gare == location and (win_end - win_start) >= duration:
+                        free_start = win_start
 
                         maintenance_rows.append({
                             "rame": rame_id,
-                            "marche": f"MAINT-{code}-{round(free_start,2)}",
+                            "marche": f"MAINT-{code}-{cpt}",
                             "gare_depart": location,
                             "depart": free_start,
                             "gare_arrivee": location,
                             "arrivee": free_start + duration,
                             "vide_voyageur": True,
                             "materiel": code,
-                            "axe": "MAINTENANCE"
+                            "axe": "MAINTENANCE",
+                            "type": "MAINT"
                         })
 
-                        # mise à jour des états
-                        rame_state[rame_id]["dispo"] = free_start + duration
                         rame_state[rame_id]["gare"] = location
+                        rame_state[rame_id]["dispo"] = free_start + duration
 
-                        # ajouter au planning
                         rame_timetable[rame_id].append({
+                            "gare_depart": location,
                             "depart": free_start,
                             "arrivee": free_start + duration,
                             "gare_arrivee": location
                         })
 
-                        print(f"🛠 Maintenance placée: {code} → rame {rame_id} ({duration}h entre {round(free_start,2)}h et {round(free_start+duration,2)}h)")
+                        print(
+                            f"🛠 Maintenance placée (avant 1er train): {code} → rame {rame_id} "
+                            f"({duration}h entre {round(free_start,2)}h et {round(free_start+duration,2)}h)"
+                        )
+
+                        cpt += 1
                         placed = True
-                        break
+                        continue
+
+                for i in range(len(events) - 1):
+                    end_prev = events[i][1] + 1.0       # tampon 1h
+                    start_next = events[i + 1][0] - 1.0
+
+                    free_start = max(end_prev, win_start)
+                    free_end = min(start_next, win_end)
+
+                    if free_end - free_start < duration:
+                        continue
+
+                    last_gare = events[i][2]
+
+                    # ❌ la rame n’est pas à la bonne gare → refus
+                    if last_gare != location:
+                        continue
+
+                    # ========================================================
+                    # ✅ Maintenance VALIDÉE
+                    # ========================================================
+                    maintenance_rows.append({
+                        "rame": rame_id,
+                        "marche": f"MAINT-{code}-{cpt}",
+                        "gare_depart": location,
+                        "depart": free_start,
+                        "gare_arrivee": location,
+                        "arrivee": free_start + duration,
+                        "vide_voyageur": True,
+                        "materiel": code,
+                        "axe": "MAINTENANCE",
+                        "types": slot.get("types", []),
+                        "type": "MAINT"
+                    })
+
+                    rame_state[rame_id]["gare"] = location
+                    rame_state[rame_id]["dispo"] = free_start + duration
+
+                    rame_timetable[rame_id].append({
+                        "depart": free_start,
+                        "arrivee": free_start + duration,
+                        "gare_arrivee": location,
+                        "gare_depart":location
+                    })
+
+                    print(
+                        f"🛠 Maintenance placée: {code} → rame {rame_id} "
+                        f"({duration}h entre {round(free_start,2)}h et {round(free_start+duration,2)}h)"
+                    )
+
+                    cpt += 1
+                    placed = True
+                    break
 
                 if placed:
                     break
@@ -1106,10 +2357,19 @@ def process_and_generate():
             if not placed:
                 print(f"⚠️ IMPOSSIBLE : {code} maintenance ({duration}h) dans fenêtre {win_start}-{win_end}")
 
+
+
     # merge
     if maintenance_rows:
         df_assign_global = pd.concat([df_assign_global, pd.DataFrame(maintenance_rows)], ignore_index=True)
         df_assign_global = df_assign_global.sort_values("depart")
+    
+    # ================== OCCUPATION DES VOIES DE MAINTENANCE ==================
+    occupancy_by_site = compute_maintenance_occupation(df_assign_global)
+    plot_maintenance_occupation(occupancy_by_site)
+    
+
+
 
 
     # ------------------------ 3) EXPORT PDF ------------------------
@@ -1117,8 +2377,7 @@ def process_and_generate():
 
     for code in parc.keys():
         df_mat = df_assign_global[df_assign_global["materiel"] == code].copy()
-        if df_mat.empty:
-            continue
+        
 
         print(f"\n=== Maintenances appliquées pour {code} ===")
         print(df_mat[df_mat["marche"].astype(str).str.startswith("MAINT")][["rame","marche","gare_depart","depart","gare_arrivee","arrivee"]])
@@ -1126,6 +2385,10 @@ def process_and_generate():
         draw_pdf_for_material(df_mat, code)
 
     print("\n✅ Process terminé avec maintenance + tampon EVO intégrés.")
+    
+    generate_kpi_pdf_from_df(df_assign_global)
+    plot_repartition_flotte_par_ligne(df_assign_global)
+
 
 def generate_pphpd_global(pphpd_par_axe):
     from reportlab.lib.utils import ImageReader
@@ -1143,16 +2406,16 @@ def generate_pphpd_global(pphpd_par_axe):
 
     c.setFont("Helvetica", 10)
     text = [
-        "Le PPHPD (Place Par Heure et par Direction) permet d’estimer la",
-        "capacité théorique maximale offerte par l’exploitation, heure par heure.",
+        "Le PPHPD (Personnes Par Heure et par Direction) permet d’estimer la",
+        "capacité théorique maximale offerte sur un axe.",
         "",
         "Règles appliquées :",
         " • Avant 12h : le PPHPD est calculé à partir de l’heure d’arrivée des trains.",
         " • Après 12h : le PPHPD est calculé à partir de l’heure de départ.",
-        " • Les marches vides voyageurs (HLP, navettes, évolutions) sont exclues.",
-        " • La direction est déterminée par le numéro de marche :",
-        "      - Numéro pair   → direction Paris",
-        "      - Numéro impair → direction Province",
+        " • Les marches vides voyageurs sont exclues.",
+        " • La direction est déterminée par le numéro de marche et l'axe de la ligne:",
+        "      - Numéro pair   → sens ouest",
+        "      - Numéro impair → sens est",
     ]
 
     y = PAGE_HEIGHT - 120
@@ -1176,19 +2439,38 @@ def generate_pphpd_global(pphpd_par_axe):
 
         dfp = df.pivot(index="heure", columns="direction", values="pphpd").fillna(0)
 
+        # ======================
         # Génération du graphe
+        # ======================
         plt.figure(figsize=(8, 3))
-        for col in dfp.columns:
-            plt.plot(dfp.index, dfp[col], marker="o", label=col)
+
+        x = np.arange(len(dfp.index))          # positions numériques des heures
+        width = 0.35                           # largeur des barres
+        n_cols = len(dfp.columns)
+
+        for i, col in enumerate(dfp.columns):
+            plt.bar(
+                x + (i - n_cols / 2) * width + width / 2,
+                dfp[col].values,
+                width=width,
+                label=col
+            )
+
         plt.title(f"PPHPD – {axe}")
-        plt.grid(True)
+        plt.xlabel("Heure")
+        plt.ylabel("PPHPD")
+        
+        plt.xticks(x, dfp.index)               # une barre par heure
+        plt.grid(axis="y", linestyle="--", alpha=0.5)
         plt.legend()
 
-        tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
-        plt.savefig(tmp.name, dpi=150, bbox_inches='tight')
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+        plt.savefig(tmp.name, dpi=150, bbox_inches="tight")
         plt.close()
 
-        # Nouvelle page si on a déjà 2 graphiques sur la page
+        # ======================
+        # Gestion du PDF
+        # ======================
         if graphs_per_page >= 2:
             c.showPage()
             graphs_per_page = 0
@@ -1214,16 +2496,25 @@ def generate_pphpd_global(pphpd_par_axe):
         )
 
         graphs_per_page += 1
-        current_y = img_top - img_height - 40  # espace avant le prochain graphe
+        current_y = img_top - img_height - 40
 
         try:
             os.unlink(tmp.name)
         except PermissionError:
             pass
 
+
     c.save()
     print(f"PDF global PPHPD généré : {nom_pdf}")
 
 
 if __name__ == "__main__":
+    AXES_OUEST = {
+        normalize_axe_name(a) for a in AXES_OUEST
+    }
+
+    AXES_EST = {
+        normalize_axe_name(a) for a in AXES_EST
+    }
     process_and_generate()
+    

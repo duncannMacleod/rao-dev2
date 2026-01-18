@@ -364,5 +364,13 @@
         "gare_arrivee": "MAS",
         "arrivee": 9.75,
         "vide_voyageur":true
+    },
+    {
+        "marche": 879999,
+        "gare_depart": "MSC",
+        "depart": 21,
+        "gare_arrivee": "MAS",
+        "arrivee": 21.75,
+        "vide_voyageur":true
     }
 ]

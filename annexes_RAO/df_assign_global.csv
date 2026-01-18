@@ -1,0 +1,669 @@
+rame,marche,gare_depart,depart,gare_arrivee,arrivee,vide_voyageur,type,axe,distance_km,materiel
+81501,879399,AVG,5.5,CAS,5.833,True,MOVE,avignon – tgv – capentras,28.0,BGC
+81502,EVM5.65AVI,AVG,5.317,AVI,5.4,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81502,879303,AVI,5.65,AVV,5.733,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81501,879307,CAS,6.1,AVV,6.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879302,AVV,6.133,CAS,6.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,EVM6.667AVV,AVG,6.334,AVV,6.417,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,879306,AVV,6.667,CAS,7.317,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879311,CAS,7.1,AVV,7.75,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879310,AVV,7.15,CAS,7.833,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81504,EVM7.333AVI,AVG,7.0,AVI,7.083,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81504,879313,AVI,7.333,AVV,7.433,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81503,879315,CAS,7.583,AVV,8.283,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81505,EVM7.633AVV,AVG,7.3,AVV,7.383,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81505,879314,AVV,7.633,CAS,8.333,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879319,CAS,8.1,AVV,8.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879318,AVV,8.133,CAS,8.833,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81505,879323,CAS,8.583,AVV,9.283,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879325,CAS,9.1,AVV,9.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879322,AVV,9.133,CAS,9.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,EVI81503,AVV,8.533,AVG,8.616,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,EVO81503,AVG,9.299999999999999,AVV,9.383,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,879324,AVV,9.633,AVI,9.717,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81501,879327,CAS,10.1,AVV,10.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879328,AVV,10.15,CAS,10.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879332,AVV,11.15,AVI,11.233,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81503,EVI81503,AVI,9.967,AVG,10.05,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,EVO81503,AVG,10.866999999999999,AVI,10.95,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,879331,AVI,11.2,AVV,11.3,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81503,879336,AVV,11.633,AVI,11.717,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81501,879335,AVI,11.65,AVV,11.75,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81502,879339,CAS,12.1,AVV,12.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879340,AVV,12.133,CAS,12.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879347,CAS,13.1,AVV,13.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879344,AVV,13.133,CAS,13.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,EVI81503,AVI,11.967,AVG,12.05,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,EVO81503,AVG,12.85,AVI,12.933,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,879343,AVI,13.183,AVV,13.283,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81503,879348,AVV,13.633,AVI,13.717,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81501,879350,AVV,14.133,CAS,14.833,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879353,CAS,14.567,AVV,15.283,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,879351,AVI,14.65,AVV,14.733,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81501,879357,CAS,15.1,AVV,15.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,879354,AVV,15.133,CAS,15.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879358,AVV,15.633,AVI,15.717,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81503,879361,CAS,16.1,AVV,16.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879362,AVV,16.133,CAS,16.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879364,AVI,16.583,CAS,17.05,False,MOVE,avignon – tgv – capentras,26.0,BGC
+81504,EVI81504,AVV,7.683,AVG,7.766,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81504,EVO81504,AVG,16.3,AVV,16.383,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81504,879366,AVV,16.633,AVI,16.717,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81501,879369,CAS,17.1,AVV,17.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,879370,AVV,17.133,CAS,17.833,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81504,879365,AVI,17.183,AVV,17.283,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81502,879371,CAS,17.55,AVV,18.283,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81504,879374,AVV,17.633,CAS,18.333,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,879375,CAS,18.1,AVV,18.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879378,AVV,18.133,CAS,18.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879382,AVV,18.633,AVI,18.717,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81501,879383,CAS,19.1,AVV,19.733,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81503,879386,AVV,19.133,CAS,19.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879379,AVI,19.183,AVV,19.283,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81502,879380,AVV,19.883,AVI,19.95,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81503,879391,CAS,20.1,AVV,20.85,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81501,879390,AVV,20.133,CAS,20.8,False,MOVE,avignon – tgv – capentras,30.0,BGC
+81502,879387,AVI,20.183,AVV,20.283,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81502,879392,AVV,20.583,AVI,20.667,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81504,879395,CAS,20.967,AVI,21.467,False,MOVE,avignon – tgv – capentras,26.0,BGC
+81501,879999,CAS,21.08,AVG,21.416,True,MOVE,avignon – tgv – capentras,28.0,BGC
+81503,879394,AVV,21.133,AVI,21.217,False,MOVE,avignon – tgv – capentras,4.0,BGC
+81502,EVS20.667,AVI,20.917,AVG,21.0,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81503,EVS21.217,AVI,21.467,AVG,21.549999999999997,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81504,EVS21.467,AVI,21.717,AVG,21.799999999999997,True,MOVE,avignon – tgv – capentras,2.0,BGC
+81505,EVS9.283,AVV,9.533,AVG,9.616,True,MOVE,avignon – tgv – capentras,2.0,BGC
+59001,EVM6.833MSC,MBC,6.5,MSC,6.583,True,MOVE,intervilles – marseille – lyon,2.0,R2N
+59001,17700,MSC,6.833,LYD,10.667,False,MOVE,intervilles – marseille – lyon,351.0,R2N
+59002,EVM7.333LYD,LYG,7.0,LYD,7.083,True,MOVE,intervilles – marseille – lyon,1.0,R2N
+59002,17701,LYD,7.333,MSC,11.217,False,MOVE,intervilles – marseille – lyon,351.0,R2N
+59001,EVI59001,LYD,10.917,LYG,11.0,True,MOVE,intervilles – marseille – lyon,1.0,R2N
+59001,EVO59001,LYG,12.0,LYD,12.083,True,MOVE,intervilles – marseille – lyon,1.0,R2N
+59001,17703,LYD,12.333,MSC,16.217,False,MOVE,intervilles – marseille – lyon,351.0,R2N
+59002,EVI59002,MSC,11.467,MBC,11.55,True,MOVE,intervilles – marseille – lyon,2.0,R2N
+59002,EVO59002,MBC,12.549999999999999,MSC,12.633,True,MOVE,intervilles – marseille – lyon,2.0,R2N
+59002,17702,MSC,12.883,LYD,16.667,False,MOVE,intervilles – marseille – lyon,351.0,R2N
+59001,17704,MSC,16.867,LYD,20.667,False,MOVE,intervilles – marseille – lyon,351.0,R2N
+59002,17705,LYD,17.333,MSC,21.183,False,MOVE,intervilles – marseille – lyon,351.0,R2N
+59001,EVS20.667,LYD,20.917,LYG,21.0,True,MOVE,intervilles – marseille – lyon,1.0,R2N
+59002,EVS21.183,MSC,21.433,MBC,21.516,True,MOVE,intervilles – marseille – lyon,2.0,R2N
+81506,EVM5.683AXP,AXG,5.35,AXP,5.433,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81506,740014,AXP,5.683,MEK,6.083,False,MOVE,marseille – aix – en – provence,33.0,BGC
+81507,EVM6.183AXP,AXG,5.85,AXP,5.933,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81507,880654,AXP,6.183,MEK,6.683,False,MOVE,marseille – aix – en – provence,33.0,BGC
+81508,EVM6.383AXP,AXG,6.05,AXP,6.133,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81508,880107,AXP,6.383,MSC,7.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,EVM6.383AXP,AXG,6.05,AXP,6.133,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81509,880107,AXP,6.383,MSC,7.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880655,MEK,6.383,MSC,7.617,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81510,EVM6.383MSC,MBC,6.05,MSC,6.133,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81510,880104,MSC,6.383,AXP,7.133,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81511,EVM6.683AXP,AXG,6.35,AXP,6.433,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81511,880109,AXP,6.683,MSC,7.317,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81512,EVM6.883MSC,MBC,6.55,MSC,6.633,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81512,880108,MSC,6.883,AXP,7.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81513,EVM7.183MSC,MBC,6.85,MSC,6.933,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81513,880110,MSC,7.183,AXP,7.85,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81510,880113,AXP,7.367,MSC,8.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81514,EVM7.367AXP,AXG,7.034,AXP,7.117,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81514,880113,AXP,7.367,MSC,8.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,880657,MEK,7.383,MSC,8.617,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81515,880657,MEK,7.383,MSC,8.617,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81508,880112,MSC,7.383,AXP,8.15,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880116,MSC,7.883,AXP,8.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880115,AXP,8.383,MSC,9.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,EVI81509,MSC,7.367,MBC,7.45,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81509,EVO81509,MBC,8.049999999999999,MSC,8.133,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81509,880120,MSC,8.383,AXP,9.15,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81512,880999,AXP,8.5,MBC,9.0,True,MOVE,marseille – aix – en – provence,38.0,BGC
+81507,880122,MSC,8.883,AXP,9.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880119,AXP,8.883,MSC,9.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880126,MSC,9.383,AXP,10.133,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,880123,AXP,9.883,MSC,10.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880131,AXP,11.383,MSC,12.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,EVI81506,MSC,9.867,MBC,9.950000000000001,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81506,EVO81506,MBC,11.049999999999999,MSC,11.133,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81506,880136,MSC,11.383,AXP,12.133,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,EVI81509,AXP,9.4,AXG,9.483,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81509,EVO81509,AXG,11.549999999999999,AXP,11.633,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81509,880135,AXP,11.883,MSC,12.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,EVI81507,MSC,10.867,MBC,10.950000000000001,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81507,EVO81507,MBC,11.549999999999999,MSC,11.633,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81507,880138,MSC,11.883,AXP,12.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880666,MSC,12.383,MEK,13.617,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81506,880141,AXP,12.883,MSC,13.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,880142,MSC,12.883,AXP,13.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,880149,AXP,13.883,MSC,14.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880152,MSC,13.883,AXP,14.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880671,MEK,14.383,MSC,15.617,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81507,880154,MSC,14.883,AXP,15.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880158,MSC,15.883,AXP,16.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880163,AXP,15.883,MSC,16.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81510,EVI81510,MSC,8.367,MBC,8.450000000000001,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81510,EVO81510,MBC,15.549999999999999,MSC,15.633,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81510,880158,MSC,15.883,AXP,16.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,880165,AXP,16.367,MSC,17.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81511,EVI81511,MSC,7.567,MBC,7.65,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81511,EVO81511,MBC,16.05,MSC,16.133,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81511,880162,MSC,16.383,AXP,17.133,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81514,EVI81514,MSC,8.367,MBC,8.450000000000001,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81514,EVO81514,MBC,16.05,MSC,16.133,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81514,880162,MSC,16.383,AXP,17.133,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880164,MSC,16.883,AXP,17.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880167,AXP,16.883,MSC,17.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,EVI81509,AXP,13.883,AXG,13.966,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81509,EVO81509,AXG,16.834000000000003,AXP,16.917,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81509,880169,AXP,17.167,MSC,17.817,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81515,EVI81515,MSC,8.867,MBC,8.950000000000001,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81515,EVO81515,MBC,16.85,MSC,16.933,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81515,880674,MSC,17.183,MEK,18.333,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81516,EVM17.183MSC,MBC,16.85,MSC,16.933,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81516,880674,MSC,17.183,MEK,18.333,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81510,880171,AXP,17.383,MSC,18.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,880168,MSC,17.383,AXP,18.133,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81511,880173,AXP,17.667,MSC,18.317,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880175,AXP,17.883,MSC,18.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880170,MSC,17.883,AXP,18.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,880172,MSC,18.183,AXP,18.85,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81517,EVM18.183MSC,MBC,17.85,MSC,17.933,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81517,880172,MSC,18.183,AXP,18.85,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81510,880678,MSC,18.383,MEK,19.6,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81507,880179,AXP,18.383,MSC,19.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81515,880677,MEK,18.55,AXP,19.067,False,MOVE,marseille – aix – en – provence,33.0,BGC
+81508,880183,AXP,18.883,MSC,19.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880176,MSC,18.883,AXP,19.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,880185,AXP,19.383,MSC,20.117,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81510,880681,MEK,19.867,MSC,21.117,False,MOVE,marseille – aix – en – provence,68.0,BGC
+81506,880189,AXP,19.883,MSC,20.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,880182,MSC,19.883,AXP,20.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81508,880182,MSC,19.883,AXP,20.617,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880186,MSC,20.883,AXP,21.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81509,EVI81509,MSC,20.367,MBC,20.45,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81509,EVO81509,MBC,21.55,MSC,21.633,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81509,880190,MSC,21.883,AXP,22.633,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,880197,AXP,22.0,MSC,22.7,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81507,EVI81507,AXP,20.867,AXG,20.95,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81507,EVO81507,AXG,21.667,AXP,21.75,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81507,880197,AXP,22.0,MSC,22.7,False,MOVE,marseille – aix – en – provence,36.0,BGC
+81506,EVS22.7,MSC,22.95,MBC,23.032999999999998,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81507,EVS22.7,MSC,22.95,MBC,23.032999999999998,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81508,EVS20.617,AXP,20.867,AXG,20.95,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81509,EVS22.633,AXP,22.883,AXG,22.965999999999998,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81510,EVS21.117,MSC,21.367,MBC,21.45,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81511,EVS18.317,MSC,18.567,MBC,18.65,True,MOVE,marseille – aix – en – provence,2.0,BGC
+81513,EVS7.85,AXP,8.1,AXG,8.183,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81514,EVS17.133,AXP,17.383,AXG,17.465999999999998,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81515,EVS19.067,AXP,19.317,AXG,19.4,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81517,EVS18.85,AXP,19.1,AXG,19.183,True,MOVE,marseille – aix – en – provence,0.4,BGC
+81518,EVM6.133MSC,MBC,5.8,MSC,5.883,True,MOVE,marseille – aubagne,2.0,BGC
+81518,881005,MSC,6.133,AUB,6.667,False,MOVE,marseille – aubagne,17.0,BGC
+81519,EVM6.5MSC,MBC,6.167,MSC,6.25,True,MOVE,marseille – aubagne,2.0,BGC
+81519,881799,MSC,6.5,AUB,7.0,True,MOVE,marseille – aubagne,17.0,BGC
+81520,EVM6.633MSC,MBC,6.3,MSC,6.383,True,MOVE,marseille – aubagne,2.0,BGC
+81520,881009,MSC,6.633,AUB,7.217,False,MOVE,marseille – aubagne,17.0,BGC
+81521,881008,AUB,6.85,MSC,7.283,False,MOVE,marseille – aubagne,17.0,BGC
+81522,EVM7.133MSC,MBC,6.8,MSC,6.883,True,MOVE,marseille – aubagne,2.0,BGC
+81522,881013,MSC,7.133,AUB,7.667,False,MOVE,marseille – aubagne,17.0,BGC
+81523,EVM7.133MSC,MBC,6.8,MSC,6.883,True,MOVE,marseille – aubagne,2.0,BGC
+81523,881013,MSC,7.133,AUB,7.667,False,MOVE,marseille – aubagne,17.0,BGC
+81518,881012,AUB,7.35,MSC,7.783,False,MOVE,marseille – aubagne,17.0,BGC
+81519,881012,AUB,7.35,MSC,7.783,False,MOVE,marseille – aubagne,17.0,BGC
+81521,881017,MSC,7.633,AUB,8.167,False,MOVE,marseille – aubagne,17.0,BGC
+81520,881016,AUB,7.85,MSC,8.283,False,MOVE,marseille – aubagne,17.0,BGC
+81518,881021,MSC,8.133,AUB,8.667,False,MOVE,marseille – aubagne,17.0,BGC
+81519,881021,MSC,8.133,AUB,8.667,False,MOVE,marseille – aubagne,17.0,BGC
+81522,881020,AUB,8.35,MSC,8.783,False,MOVE,marseille – aubagne,17.0,BGC
+81520,881025,MSC,8.633,AUB,9.167,False,MOVE,marseille – aubagne,17.0,BGC
+81521,881024,AUB,8.85,MSC,9.283,False,MOVE,marseille – aubagne,17.0,BGC
+81523,881024,AUB,8.85,MSC,9.283,False,MOVE,marseille – aubagne,17.0,BGC
+81522,881029,MSC,9.133,AUB,9.667,False,MOVE,marseille – aubagne,17.0,BGC
+81518,881028,AUB,9.35,MSC,9.783,False,MOVE,marseille – aubagne,17.0,BGC
+81521,881033,MSC,9.633,AUB,10.167,False,MOVE,marseille – aubagne,17.0,BGC
+81519,881032,AUB,9.85,MSC,10.283,False,MOVE,marseille – aubagne,17.0,BGC
+81520,881036,AUB,10.85,MSC,11.283,False,MOVE,marseille – aubagne,17.0,BGC
+81518,EVI81518,MSC,10.033,MBC,10.116,True,MOVE,marseille – aubagne,2.0,BGC
+81518,EVO81518,MBC,15.384,MSC,15.467,True,MOVE,marseille – aubagne,2.0,BGC
+81518,881057,MSC,15.717,AUB,16.167,False,MOVE,marseille – aubagne,17.0,BGC
+81519,EVI81519,MSC,10.533,MBC,10.616,True,MOVE,marseille – aubagne,2.0,BGC
+81519,EVO81519,MBC,15.884,MSC,15.966999999999999,True,MOVE,marseille – aubagne,2.0,BGC
+81519,881061,MSC,16.217,AUB,16.667,False,MOVE,marseille – aubagne,17.0,BGC
+81521,881060,AUB,16.35,MSC,16.867,False,MOVE,marseille – aubagne,17.0,BGC
+81520,EVI81520,MSC,11.533,MBC,11.616,True,MOVE,marseille – aubagne,2.0,BGC
+81520,EVO81520,MBC,16.384,MSC,16.467,True,MOVE,marseille – aubagne,2.0,BGC
+81520,881065,MSC,16.717,AUB,17.167,False,MOVE,marseille – aubagne,17.0,BGC
+81518,881064,AUB,16.85,MSC,17.367,False,MOVE,marseille – aubagne,17.0,BGC
+81521,881069,MSC,17.217,AUB,17.667,False,MOVE,marseille – aubagne,17.0,BGC
+81519,881068,AUB,17.35,MSC,17.867,False,MOVE,marseille – aubagne,17.0,BGC
+81518,881073,MSC,17.717,AUB,18.167,False,MOVE,marseille – aubagne,17.0,BGC
+81523,EVI81523,MSC,9.533,MBC,9.616,True,MOVE,marseille – aubagne,2.0,BGC
+81523,EVO81523,MBC,17.384,MSC,17.467,True,MOVE,marseille – aubagne,2.0,BGC
+81523,881073,MSC,17.717,AUB,18.167,False,MOVE,marseille – aubagne,17.0,BGC
+81520,881072,AUB,17.85,MSC,18.367,False,MOVE,marseille – aubagne,17.0,BGC
+81522,881072,AUB,17.85,MSC,18.367,False,MOVE,marseille – aubagne,17.0,BGC
+81519,881077,MSC,18.217,AUB,18.667,False,MOVE,marseille – aubagne,17.0,BGC
+81521,881076,AUB,18.35,MSC,18.867,False,MOVE,marseille – aubagne,17.0,BGC
+81520,881081,MSC,18.717,AUB,19.167,False,MOVE,marseille – aubagne,17.0,BGC
+81522,881081,MSC,18.717,AUB,19.167,False,MOVE,marseille – aubagne,17.0,BGC
+81518,881080,AUB,18.85,MSC,19.367,False,MOVE,marseille – aubagne,17.0,BGC
+81523,881080,AUB,18.85,MSC,19.367,False,MOVE,marseille – aubagne,17.0,BGC
+81519,881999,AUB,19.0,MBC,19.5,True,MOVE,marseille – aubagne,14.0,BGC
+81520,881084,AUB,19.85,MSC,20.367,False,MOVE,marseille – aubagne,17.0,BGC
+81518,EVS19.367,MSC,19.617,MBC,19.7,True,MOVE,marseille – aubagne,2.0,BGC
+81520,EVS20.367,MSC,20.617,MBC,20.7,True,MOVE,marseille – aubagne,2.0,BGC
+81521,EVS18.867,MSC,19.117,MBC,19.2,True,MOVE,marseille – aubagne,2.0,BGC
+81523,EVS19.367,MSC,19.617,MBC,19.7,True,MOVE,marseille – aubagne,2.0,BGC
+81524,EVM6.05MAS,MAG,5.717,MAS,5.8,True,MOVE,marseille – avignon – via – rognac,1.0,BGC
+81524,879103,MAS,6.05,MSC,6.8,False,MOVE,marseille – avignon – via – rognac,53.0,BGC
+81524,879102,MSC,7.3,MAS,7.85,False,MOVE,marseille – avignon – via – rognac,53.0,BGC
+81524,999999,MAS,8.1,MSC,8.6,True,MOVE,marseille – avignon – via – rognac,53.0,BGC
+81524,879106,MSC,9.667,MAS,10.383,False,MOVE,marseille – avignon – via – rognac,53.0,BGC
+81524,EVI81524,MAS,10.633,MAG,10.716,True,MOVE,marseille – avignon – via – rognac,1.0,BGC
+81524,EVO81524,MAG,17.084000000000003,MAS,17.167,True,MOVE,marseille – avignon – via – rognac,1.0,BGC
+81524,879109,MAS,17.417,MSC,18.183,False,MOVE,marseille – avignon – via – rognac,53.0,BGC
+81524,EVI81524,MSC,18.433,MBC,18.516,True,MOVE,marseille – avignon – via – rognac,2.0,BGC
+81524,EVO81524,MBC,21.334000000000003,MSC,21.417,True,MOVE,marseille – avignon – via – rognac,2.0,BGC
+81524,879110,MSC,21.667,MAS,22.433,False,MOVE,marseille – avignon – via – rognac,53.0,BGC
+81524,EVS22.433,MAS,22.683,MAG,22.766,True,MOVE,marseille – avignon – via – rognac,1.0,BGC
+23501,EVM5.5AVI,AVG,5.167,AVI,5.25,True,MOVE,marseille – avignon,2.0,2NPG
+23501,879603,AVI,5.5,MSC,7.383,False,MOVE,marseille – avignon,104.0,2NPG
+23502,EVM5.9AVI,AVG,5.567,AVI,5.65,True,MOVE,marseille – avignon,2.0,2NPG
+23502,879503,AVI,5.9,MSC,7.133,False,MOVE,marseille – avignon,104.0,2NPG
+23503,EVM5.983AVI,AVG,5.6499999999999995,AVI,5.733,True,MOVE,marseille – avignon,2.0,2NPG
+23503,879607,AVI,5.983,MSC,7.783,False,MOVE,marseille – avignon,104.0,2NPG
+23504,EVM6.317MAS,MAG,5.984,MAS,6.067,True,MOVE,marseille – avignon,1.0,2NPG
+23504,879602,MAS,6.317,AVI,7.467,False,MOVE,marseille – avignon,68.0,2NPG
+23505,EVM6.383MAS,MAG,6.05,MAS,6.133,True,MOVE,marseille – avignon,1.0,2NPG
+23505,879582,MAS,6.383,AVI,7.083,False,MOVE,marseille – avignon,68.0,2NPG
+23506,EVM6.467AVI,AVG,6.1339999999999995,AVI,6.217,True,MOVE,marseille – avignon,2.0,2NPG
+23506,879611,AVI,6.467,MSC,8.317,False,MOVE,marseille – avignon,104.0,2NPG
+23507,EVM6.533MSC,MBC,6.2,MSC,6.283,True,MOVE,marseille – avignon,2.0,2NPG
+23507,879610,MSC,6.533,AVI,8.517,False,MOVE,marseille – avignon,104.0,2NPG
+23508,EVM6.85AVI,AVG,6.5169999999999995,AVI,6.6,True,MOVE,marseille – avignon,2.0,2NPG
+23508,879511,AVI,6.85,MSC,8.1,False,MOVE,marseille – avignon,104.0,2NPG
+23509,EVM6.983AVI,AVG,6.6499999999999995,AVI,6.733,True,MOVE,marseille – avignon,2.0,2NPG
+23509,879615,AVI,6.983,MSC,8.767,False,MOVE,marseille – avignon,104.0,2NPG
+23510,EVM7.05MSC,MBC,6.717,MSC,6.8,True,MOVE,marseille – avignon,2.0,2NPG
+23510,879614,MSC,7.05,AVI,8.933,False,MOVE,marseille – avignon,104.0,2NPG
+23505,879621,AVI,7.533,MSC,9.35,False,MOVE,marseille – avignon,104.0,2NPG
+23501,879510,MSC,7.667,AVI,9.083,False,MOVE,marseille – avignon,104.0,2NPG
+23504,879625,AVI,7.983,MSC,9.8,False,MOVE,marseille – avignon,104.0,2NPG
+23502,879618,MSC,8.1,AVV,10.283,False,MOVE,marseille – avignon,107.0,2NPG
+23511,EVM8.633AVV,AVG,8.299999999999999,AVV,8.383,True,MOVE,marseille – avignon,2.0,2NPG
+23511,879629,AVV,8.633,MSC,10.767,False,MOVE,marseille – avignon,107.0,2NPG
+23503,879620,MSC,8.967,AVI,11.033,False,MOVE,marseille – avignon,104.0,2NPG
+23507,879527,AVI,8.983,MSC,10.317,False,MOVE,marseille – avignon,104.0,2NPG
+23506,222222,MSC,9.0,MAS,9.75,True,MOVE,marseille – avignon,53.0,2NPG
+23502,879633,AVV,10.633,MSC,12.8,False,MOVE,marseille – avignon,107.0,2NPG
+23504,879522,MSC,10.667,AVI,12.033,False,MOVE,marseille – avignon,104.0,2NPG
+23506,879688,MAS,10.817,AVV,12.283,False,MOVE,marseille – avignon,73.0,2NPG
+23505,EVI23505,MSC,9.6,MBC,9.683,True,MOVE,marseille – avignon,2.0,2NPG
+23505,EVO23505,MBC,10.717,MSC,10.8,True,MOVE,marseille – avignon,2.0,2NPG
+23505,879666,MSC,11.05,CVN,12.25,False,MOVE,marseille – avignon,71.0,2NPG
+23501,EVI23501,AVI,9.333,AVG,9.416,True,MOVE,marseille – avignon,2.0,2NPG
+23501,EVO23501,AVG,11.65,AVI,11.733,True,MOVE,marseille – avignon,2.0,2NPG
+23501,879539,AVI,11.983,MSC,13.317,False,MOVE,marseille – avignon,104.0,2NPG
+23507,EVI23507,MSC,10.567,MBC,10.65,True,MOVE,marseille – avignon,2.0,2NPG
+23507,EVO23507,MBC,11.767,MSC,11.85,True,MOVE,marseille – avignon,2.0,2NPG
+23507,879626,MSC,12.1,AVV,14.283,False,MOVE,marseille – avignon,107.0,2NPG
+23505,879667,CVN,12.5,MSC,13.767,False,MOVE,marseille – avignon,71.0,2NPG
+23506,879637,AVV,12.633,MSC,14.883,False,MOVE,marseille – avignon,107.0,2NPG
+23503,EVI23503,AVI,11.283,AVG,11.366,True,MOVE,marseille – avignon,2.0,2NPG
+23503,EVO23503,AVG,12.65,AVI,12.733,True,MOVE,marseille – avignon,2.0,2NPG
+23503,879543,AVI,12.983,MSC,14.383,False,MOVE,marseille – avignon,104.0,2NPG
+23502,879670,MSC,13.05,CVN,14.25,False,MOVE,marseille – avignon,71.0,2NPG
+23501,879630,MSC,14.1,AVV,16.283,False,MOVE,marseille – avignon,107.0,2NPG
+23502,879671,CVN,14.55,MSC,15.817,False,MOVE,marseille – avignon,71.0,2NPG
+23507,879641,AVV,14.633,MSC,16.733,False,MOVE,marseille – avignon,107.0,2NPG
+23503,879538,MSC,14.65,AVI,16.067,False,MOVE,marseille – avignon,104.0,2NPG
+23505,EVI23505,MSC,14.017,MBC,14.1,True,MOVE,marseille – avignon,2.0,2NPG
+23505,EVO23505,MBC,14.767,MSC,14.85,True,MOVE,marseille – avignon,2.0,2NPG
+23505,879674,MSC,15.1,CVN,16.25,False,MOVE,marseille – avignon,71.0,2NPG
+23506,879542,MSC,15.667,AVI,16.983,False,MOVE,marseille – avignon,104.0,2NPG
+23504,EVI23504,AVI,12.283,AVG,12.366,True,MOVE,marseille – avignon,2.0,2NPG
+23504,EVO23504,AVG,15.65,AVI,15.733,True,MOVE,marseille – avignon,2.0,2NPG
+23504,879555,AVI,15.983,MSC,17.333,False,MOVE,marseille – avignon,104.0,2NPG
+23502,879634,MSC,16.1,AVI,17.933,False,MOVE,marseille – avignon,104.0,2NPG
+23505,879675,CVN,16.55,MSC,17.8,False,MOVE,marseille – avignon,71.0,2NPG
+23508,EVI23508,MSC,8.35,MBC,8.433,True,MOVE,marseille – avignon,2.0,2NPG
+23508,EVO23508,MBC,16.284000000000002,MSC,16.367,True,MOVE,marseille – avignon,2.0,2NPG
+23508,879638,MSC,16.617,AVI,18.517,False,MOVE,marseille – avignon,104.0,2NPG
+23507,879642,MSC,16.967,AVI,18.933,False,MOVE,marseille – avignon,104.0,2NPG
+23503,879645,AVI,17.017,MSC,18.75,False,MOVE,marseille – avignon,104.0,2NPG
+23506,879649,AVI,17.5,MSC,19.333,False,MOVE,marseille – avignon,104.0,2NPG
+23509,EVI23509,MSC,9.017,MBC,9.1,True,MOVE,marseille – avignon,2.0,2NPG
+23509,EVO23509,MBC,17.200000000000003,MSC,17.283,True,MOVE,marseille – avignon,2.0,2NPG
+23509,879646,MSC,17.533,AVI,19.517,False,MOVE,marseille – avignon,104.0,2NPG
+23504,879546,MSC,17.95,AVI,19.15,False,MOVE,marseille – avignon,104.0,2NPG
+23510,EVI23510,AVI,9.183,AVG,9.266,True,MOVE,marseille – avignon,2.0,2NPG
+23510,EVO23510,AVG,17.667,AVI,17.75,True,MOVE,marseille – avignon,2.0,2NPG
+23510,879651,AVI,18.0,MSC,19.883,False,MOVE,marseille – avignon,104.0,2NPG
+23505,879650,MSC,18.05,AVI,19.95,False,MOVE,marseille – avignon,104.0,2NPG
+23511,EVI23511,MSC,11.017,MBC,11.1,True,MOVE,marseille – avignon,2.0,2NPG
+23511,EVO23511,MBC,18.234,MSC,18.317,True,MOVE,marseille – avignon,2.0,2NPG
+23511,879654,MSC,18.567,AVI,20.5,False,MOVE,marseille – avignon,104.0,2NPG
+23502,879571,AVI,19.0,MSC,20.383,False,MOVE,marseille – avignon,104.0,2NPG
+23508,879653,AVI,19.0,MSC,20.75,False,MOVE,marseille – avignon,104.0,2NPG
+23503,879656,MSC,19.55,AVI,21.517,False,MOVE,marseille – avignon,104.0,2NPG
+23506,999999,MSC,20.0,MAS,20.75,True,MOVE,marseille – avignon,53.0,2NPG
+23502,879570,MSC,20.617,AVI,22.033,False,MOVE,marseille – avignon,104.0,2NPG
+23504,EVI23504,AVI,19.4,AVG,19.482999999999997,True,MOVE,marseille – avignon,2.0,2NPG
+23504,EVO23504,AVG,20.667,AVI,20.75,True,MOVE,marseille – avignon,2.0,2NPG
+23504,879577,AVI,21.0,MSC,22.417,False,MOVE,marseille – avignon,104.0,2NPG
+23508,879999,MSC,21.0,MAS,21.75,True,MOVE,marseille – avignon,53.0,2NPG
+23501,EVS16.283,AVV,16.533,AVG,16.616,True,MOVE,marseille – avignon,2.0,2NPG
+23502,EVS22.033,AVI,22.283,AVG,22.366,True,MOVE,marseille – avignon,2.0,2NPG
+23503,EVS21.517,AVI,21.767,AVG,21.849999999999998,True,MOVE,marseille – avignon,2.0,2NPG
+23504,EVS22.417,MSC,22.667,MBC,22.75,True,MOVE,marseille – avignon,2.0,2NPG
+23505,EVS19.95,AVI,20.2,AVG,20.282999999999998,True,MOVE,marseille – avignon,2.0,2NPG
+23506,EVS20.75,MAS,21.0,MAG,21.083,True,MOVE,marseille – avignon,1.0,2NPG
+23507,EVS18.933,AVI,19.183,AVG,19.266,True,MOVE,marseille – avignon,2.0,2NPG
+23508,EVS21.75,MAS,22.0,MAG,22.083,True,MOVE,marseille – avignon,1.0,2NPG
+23509,EVS19.517,AVI,19.767,AVG,19.849999999999998,True,MOVE,marseille – avignon,2.0,2NPG
+23510,EVS19.883,MSC,20.133,MBC,20.215999999999998,True,MOVE,marseille – avignon,2.0,2NPG
+23511,EVS20.5,AVI,20.75,AVG,20.833,True,MOVE,marseille – avignon,2.0,2NPG
+84501,880666,GAG,4.25,SIS,5.5,True,MOVE,marseille – briancon,78.0,REG
+84502,EVM5.117GAP,GAG,4.784,GAP,4.867,True,MOVE,marseille – briancon,0.4,REG
+84502,17421,GAP,5.117,MSC,8.317,False,MOVE,marseille – briancon,222.0,REG
+84503,EVM5.617GAP,GAG,5.284,GAP,5.367,True,MOVE,marseille – briancon,0.4,REG
+84503,17425,GAP,5.617,MSC,8.8,False,MOVE,marseille – briancon,222.0,REG
+84501,880693,SIS,5.783,MSC,7.817,False,MOVE,marseille – briancon,145.0,REG
+84504,EVM6.233BRI,BRG,5.8999999999999995,BRI,5.983,True,MOVE,marseille – briancon,0.4,REG
+84504,17364,BRI,6.233,VYN,7.85,False,MOVE,marseille – briancon,108.0,REG
+84505,EVM7.683MSC,MBC,7.35,MSC,7.433,True,MOVE,marseille – briancon,2.0,REG
+84505,17400,MSC,7.683,BRI,12.117,False,MOVE,marseille – briancon,303.0,REG
+84506,EVM8.45BRI,BRG,8.116999999999999,BRI,8.2,True,MOVE,marseille – briancon,0.4,REG
+84506,17433,BRI,8.45,MSC,12.817,False,MOVE,marseille – briancon,303.0,REG
+84504,17455,VYN,9.05,BRI,10.983,False,MOVE,marseille – briancon,108.0,REG
+84507,EVM9.667BRI,BRG,9.334,BRI,9.417,True,MOVE,marseille – briancon,0.4,REG
+84507,17368,BRI,9.667,VYN,11.217,False,MOVE,marseille – briancon,108.0,REG
+84507,17353,VYN,12.767,BRI,14.417,False,MOVE,marseille – briancon,108.0,REG
+84504,EVI84504,BRI,11.233,BRG,11.316,True,MOVE,marseille – briancon,0.4,REG
+84504,EVO84504,BRG,12.45,BRI,12.533,True,MOVE,marseille – briancon,0.4,REG
+84504,17437,BRI,12.783,MSC,17.317,False,MOVE,marseille – briancon,303.0,REG
+84501,EVI84501,MSC,8.067,MBC,8.15,True,MOVE,marseille – briancon,2.0,REG
+84501,EVO84501,MBC,12.85,MSC,12.933,True,MOVE,marseille – briancon,2.0,REG
+84501,17404,MSC,13.183,BRI,17.85,False,MOVE,marseille – briancon,303.0,REG
+84505,EVI84505,BRI,12.367,BRG,12.450000000000001,True,MOVE,marseille – briancon,0.4,REG
+84505,EVO84505,BRG,14.9,BRI,14.983,True,MOVE,marseille – briancon,0.4,REG
+84505,17376,BRI,15.233,VYN,16.733,False,MOVE,marseille – briancon,108.0,REG
+84502,EVI84502,MSC,8.567,MBC,8.65,True,MOVE,marseille – briancon,2.0,REG
+84502,EVO84502,MBC,16.35,MSC,16.433,True,MOVE,marseille – briancon,2.0,REG
+84502,17408,MSC,16.683,BRI,21.45,False,MOVE,marseille – briancon,303.0,REG
+84505,17361,VYN,16.983,BRI,18.533,False,MOVE,marseille – briancon,108.0,REG
+84507,EVI84507,BRI,14.667,BRG,14.75,True,MOVE,marseille – briancon,0.4,REG
+84507,EVO84507,BRG,17.1,BRI,17.183,True,MOVE,marseille – briancon,0.4,REG
+84507,17445,BRI,17.433,MSC,21.817,False,MOVE,marseille – briancon,303.0,REG
+84503,EVI84503,MSC,9.05,MBC,9.133000000000001,True,MOVE,marseille – briancon,2.0,REG
+84503,EVO84503,MBC,17.35,MSC,17.433,True,MOVE,marseille – briancon,2.0,REG
+84503,880692,MSC,17.683,SIS,19.75,False,MOVE,marseille – briancon,145.0,REG
+84504,EVI84504,MSC,17.567,MBC,17.65,True,MOVE,marseille – briancon,2.0,REG
+84504,EVO84504,MBC,18.35,MSC,18.433,True,MOVE,marseille – briancon,2.0,REG
+84504,17416,MSC,18.683,GAP,21.817,False,MOVE,marseille – briancon,222.0,REG
+84506,EVI84506,MSC,13.067,MBC,13.15,True,MOVE,marseille – briancon,2.0,REG
+84506,EVO84506,MBC,18.35,MSC,18.433,True,MOVE,marseille – briancon,2.0,REG
+84506,17416,MSC,18.683,GAP,21.817,False,MOVE,marseille – briancon,222.0,REG
+84503,880555,SIS,20.0,GAG,21.25,True,MOVE,marseille – briancon,78.0,REG
+84501,EVS17.85,BRI,18.1,BRG,18.183,True,MOVE,marseille – briancon,0.4,REG
+84502,EVS21.45,BRI,21.7,BRG,21.782999999999998,True,MOVE,marseille – briancon,0.4,REG
+84504,EVS21.817,GAP,22.067,GAG,22.15,True,MOVE,marseille – briancon,0.4,REG
+84505,EVS18.533,BRI,18.783,BRG,18.866,True,MOVE,marseille – briancon,0.4,REG
+84506,EVS21.817,GAP,22.067,GAG,22.15,True,MOVE,marseille – briancon,0.4,REG
+84507,EVS21.817,MSC,22.067,MBC,22.15,True,MOVE,marseille – briancon,2.0,REG
+81525,EVM5.567MAS,MAG,5.234,MAS,5.317,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+81525,879703,MAS,5.567,MSC,7.033,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81526,EVM5.867MSC,MBC,5.534,MSC,5.617,True,MOVE,marseille – miramas – via – cote – bleue,2.0,BGC
+81526,879704,MSC,5.867,MAS,7.267,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81527,EVM6.133MAS,MAG,5.8,MAS,5.883,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+81527,879707,MAS,6.133,MSC,7.617,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+84508,EVM6.567MAS,MAG,6.234,MAS,6.317,True,MOVE,marseille – miramas – via – cote – bleue,1.0,REG
+84508,879711,MAS,6.567,MSC,8.033,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+84509,EVM6.733MSC,MBC,6.3999999999999995,MSC,6.483,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84509,879708,MSC,6.733,MAS,8.15,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+84510,EVM7.133MAS,MAG,6.8,MAS,6.883,True,MOVE,marseille – miramas – via – cote – bleue,1.0,REG
+84510,879715,MAS,7.133,MSC,8.617,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+81526,879719,MAS,7.567,MSC,9.033,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81525,879712,MSC,7.733,MAS,9.167,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+84509,879723,MAS,8.567,MSC,10.033,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+81527,879716,MSC,8.733,MAS,10.15,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81525,EVI81525,MAS,9.417,MAG,9.5,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+81525,EVO81525,MAG,10.234,MAS,10.317,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+81525,879727,MAS,10.567,MSC,12.033,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81526,EVI81526,MSC,9.283,MBC,9.366,True,MOVE,marseille – miramas – via – cote – bleue,2.0,BGC
+81526,EVO81526,MBC,10.534,MSC,10.617,True,MOVE,marseille – miramas – via – cote – bleue,2.0,BGC
+81526,879724,MSC,10.867,MAS,12.267,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81526,879731,MAS,12.567,MSC,14.033,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81525,879728,MSC,12.817,MAS,14.267,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81526,879732,MSC,14.25,MAS,15.717,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81525,879735,MAS,14.567,MSC,16.033,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81526,879739,MAS,16.0,MSC,17.383,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+81525,879738,MSC,16.383,MAS,17.85,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+84508,EVI84508,MSC,8.283,MBC,8.366,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84508,EVO84508,MBC,16.334000000000003,MSC,16.417,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84508,879740,MSC,16.667,MAS,18.267,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+81527,EVI81527,MAS,10.4,MAG,10.483,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+81527,EVO81527,MAG,16.400000000000002,MAS,16.483,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+81527,879745,MAS,16.733,MSC,18.167,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+84509,EVI84509,MSC,10.283,MBC,10.366,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84509,EVO84509,MBC,17.134,MSC,17.217,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84509,879744,MSC,17.467,MAS,18.867,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+81526,879748,MSC,17.733,MAS,19.267,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+84511,EVM17.733MAS,MAG,17.400000000000002,MAS,17.483,True,MOVE,marseille – miramas – via – cote – bleue,1.0,REG
+84511,879749,MAS,17.733,MSC,19.217,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+84510,EVI84510,MSC,8.867,MBC,8.950000000000001,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84510,EVO84510,MBC,18.034000000000002,MSC,18.117,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84510,879752,MSC,18.367,MAS,19.85,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+81525,999998,MAS,18.5,MBC,19.0,True,MOVE,marseille – miramas – via – cote – bleue,54.0,BGC
+84508,879755,MAS,18.733,MSC,20.2,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+81527,879756,MSC,18.867,MAS,20.267,False,MOVE,marseille – miramas – via – cote – bleue,53.0,BGC
+84511,879760,MSC,19.867,MAS,21.267,False,MOVE,marseille – miramas – via – cote – bleue,53.0,REG
+81526,EVS19.267,MAS,19.517,MAG,19.599999999999998,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+81527,EVS20.267,MAS,20.517,MAG,20.599999999999998,True,MOVE,marseille – miramas – via – cote – bleue,1.0,BGC
+84508,EVS20.2,MSC,20.45,MBC,20.532999999999998,True,MOVE,marseille – miramas – via – cote – bleue,2.0,REG
+84509,EVS18.867,MAS,19.117,MAG,19.2,True,MOVE,marseille – miramas – via – cote – bleue,1.0,REG
+84510,EVS19.85,MAS,20.1,MAG,20.183,True,MOVE,marseille – miramas – via – cote – bleue,1.0,REG
+84511,EVS21.267,MAS,21.517,MAG,21.599999999999998,True,MOVE,marseille – miramas – via – cote – bleue,1.0,REG
+23512,881499,TLG,5.5,HYE,5.66,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23513,881498,TLG,5.5,HYE,5.66,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23514,EVM5.933TLN,TLG,5.6,TLN,5.683,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23514,881412,TLN,5.933,MSC,6.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23515,EVM5.933TLN,TLG,5.6,TLN,5.683,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23515,881412,TLN,5.933,MSC,6.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23512,881600,HYE,6.033,MSC,7.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23516,EVM6.033MSC,MBC,5.7,MSC,5.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23516,881603,MSC,6.033,HYE,7.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23517,EVM6.367TLN,TLG,6.034,TLN,6.117,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23517,881416,TLN,6.367,MSC,7.25,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23518,EVM6.367TLN,TLG,6.034,TLN,6.117,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23518,881416,TLN,6.367,MSC,7.25,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23519,EVM6.367TLN,TLG,6.034,TLN,6.117,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23519,881416,TLN,6.367,MSC,7.25,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23520,EVM6.533MSC,MBC,6.2,MSC,6.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23520,881605,MSC,6.533,HYE,7.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23513,881602,HYE,6.533,MSC,7.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23521,EVM6.633LAC,LAG,6.3,LAC,6.383,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23521,881656,LAC,6.633,MSC,8.75,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,135.0,2NPG
+23522,EVM6.633LAC,LAG,6.3,LAC,6.383,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23522,881656,LAC,6.633,MSC,8.75,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,135.0,2NPG
+23523,EVM6.867TLN,TLG,6.534,TLN,6.617,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23523,881652,TLN,6.867,MSC,7.75,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23524,EVM7.033HYE,HYG,6.7,HYE,6.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23524,881604,HYE,7.033,MSC,8.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23525,EVM7.033HYE,HYG,6.7,HYE,6.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23525,881604,HYE,7.033,MSC,8.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23526,EVM7.067MSC,MBC,6.734,MSC,6.817,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23526,881405,MSC,7.067,TLN,8.017,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23527,881677,TLG,7.5,HYE,7.67,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23528,881677,TLG,7.5,HYE,7.67,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23514,881607,MSC,7.533,HYE,8.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23529,EVM7.533HYE,HYG,7.2,HYE,7.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23529,881606,HYE,7.533,MSC,8.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23516,111111,HYE,8.0,MSC,8.75,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23527,881608,HYE,8.033,MSC,9.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23512,881409,MSC,8.033,TLN,9.033,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23528,881608,HYE,8.033,MSC,9.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23526,881499,TLN,8.5,MSC,10.0,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23520,881610,HYE,8.533,MSC,9.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23513,881609,MSC,8.533,HYE,9.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23530,EVM8.533HYE,HYG,8.2,HYE,8.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23530,881610,HYE,8.533,MSC,9.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23515,EVI23515,MSC,7.2,MBC,7.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23515,EVO23515,MBC,9.2,MSC,9.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23515,881611,MSC,9.533,TLN,10.533,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23514,881612,HYE,9.533,MSC,10.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23516,EVI23516,MSC,9.0,MBC,9.083,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23516,EVO23516,MBC,9.7,MSC,9.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23516,881613,MSC,10.033,HYE,11.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23517,EVI23517,MSC,7.5,MBC,7.583,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23517,EVO23517,MBC,10.084,MSC,10.167,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23517,881615,MSC,10.417,TLN,11.617,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23512,EVI23512,TLN,9.283,TLG,9.366,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23512,EVO23512,TLG,10.1,TLN,10.183,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23512,881426,TLN,10.433,MSC,11.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23513,881616,HYE,11.033,MSC,12.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23518,EVI23518,MSC,7.5,MBC,7.583,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23518,EVO23518,MBC,10.7,MSC,10.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23518,881617,MSC,11.033,HYE,12.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23514,881619,MSC,11.533,TLN,12.533,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23515,EVI23515,TLN,10.783,TLG,10.866,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23515,EVO23515,TLG,11.6,TLN,11.683,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23515,881618,TLN,11.933,MSC,12.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23516,881620,HYE,12.033,MSC,13.6,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23512,881621,MSC,12.033,HYE,13.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23519,EVI23519,MSC,7.5,MBC,7.583,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23519,EVO23519,MBC,12.0,MSC,12.083,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23519,881439,MSC,12.333,TLN,13.533,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23514,881622,TLN,12.933,MSC,13.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23513,881623,MSC,13.033,HYE,14.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23518,881624,HYE,13.033,MSC,14.6,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23515,881625,MSC,13.45,TLN,14.65,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23517,EVI23517,TLN,11.867,TLG,11.950000000000001,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23517,EVO23517,TLG,13.6,TLN,13.683,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23517,881452,TLN,13.933,MSC,14.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23512,881626,HYE,14.033,MSC,15.65,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23516,881627,MSC,14.05,HYE,15.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23514,881629,MSC,14.45,TLN,15.583,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23520,EVI23520,MSC,10.2,MBC,10.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23520,EVO23520,MBC,14.116999999999999,MSC,14.2,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23520,881629,MSC,14.45,TLN,15.583,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23515,881462,TLN,14.933,MSC,15.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23518,881631,MSC,15.033,HYE,16.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23513,881628,HYE,15.033,MSC,16.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+84512,881666,MBC,15.5,HYE,16.75,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,84.0,REG
+23517,881633,MSC,15.533,TLN,16.533,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23514,881630,TLN,15.933,MSC,16.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23516,881632,HYE,16.033,MSC,17.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23512,881635,MSC,16.033,HYE,17.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23515,881637,MSC,16.533,HYE,17.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23513,881443,MSC,16.733,TLN,17.617,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23517,881634,TLN,16.867,MSC,17.883,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23518,881636,HYE,17.033,MSC,18.467,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+84512,881636,HYE,17.033,MSC,18.467,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,REG
+23521,EVI23521,MSC,9.0,MBC,9.083,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23521,EVO23521,MBC,16.700000000000003,MSC,16.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23521,881639,MSC,17.033,HYE,18.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23522,EVI23522,MSC,9.0,MBC,9.083,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23522,EVO23522,MBC,16.700000000000003,MSC,16.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23522,881639,MSC,17.033,HYE,18.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23514,881655,MSC,17.25,LAC,19.333,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,135.0,2NPG
+23523,EVI23523,MSC,8.0,MBC,8.083,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23523,EVO23523,MBC,16.917,MSC,17.0,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23523,881655,MSC,17.25,LAC,19.333,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,135.0,2NPG
+23524,EVI23524,MSC,8.7,MBC,8.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23524,EVO23524,MBC,16.917,MSC,17.0,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23524,881655,MSC,17.25,LAC,19.333,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,135.0,2NPG
+23525,EVI23525,MSC,8.7,MBC,8.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23525,EVO23525,MBC,17.200000000000003,MSC,17.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23525,881641,MSC,17.533,HYE,18.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23516,881657,MSC,17.717,TLN,18.617,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23513,881638,TLN,17.933,MSC,18.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23519,EVI23519,TLN,13.783,TLG,13.866,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23519,EVO23519,TLG,17.6,TLN,17.683,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23519,881638,TLN,17.933,MSC,18.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23512,881640,HYE,18.033,MSC,19.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23526,EVI23526,MSC,10.25,MBC,10.333,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23526,EVO23526,MBC,17.700000000000003,MSC,17.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23526,881643,MSC,18.033,HYE,19.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23527,EVI23527,MSC,9.7,MBC,9.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23527,EVO23527,MBC,17.700000000000003,MSC,17.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23527,881643,MSC,18.033,HYE,19.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23528,EVI23528,MSC,9.7,MBC,9.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23528,EVO23528,MBC,17.700000000000003,MSC,17.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23528,881643,MSC,18.033,HYE,19.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23517,881645,MSC,18.533,HYE,19.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23529,EVI23529,MSC,9.2,MBC,9.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23529,EVO23529,MBC,18.200000000000003,MSC,18.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23529,881645,MSC,18.533,HYE,19.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23515,881642,HYE,18.533,MSC,19.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23521,888888,HYE,18.75,TLN,19.083,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23518,881449,MSC,19.033,TLN,20.033,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23530,EVI23530,MSC,10.2,MBC,10.283,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23530,EVO23530,MBC,18.700000000000003,MSC,18.783,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23530,881449,MSC,19.033,TLN,20.033,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23516,881482,TLN,19.433,MSC,20.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23520,EVI23520,TLN,15.833,TLG,15.916,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23520,EVO23520,TLG,19.1,TLN,19.183,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23520,881482,TLN,19.433,MSC,20.45,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23522,881644,HYE,19.533,MSC,20.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23513,881647,MSC,19.533,HYE,20.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23512,881459,MSC,19.717,TLN,21.033,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23525,881699,HYE,19.75,TLG,19.92,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23526,881699,HYE,19.75,TLG,19.92,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23514,881999,LAC,19.75,TLG,20.3,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,69.0,2NPG
+23527,881699,HYE,19.75,TLG,19.92,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,20.0,2NPG
+23517,881646,HYE,20.533,MSC,21.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23515,881649,MSC,20.533,HYE,21.95,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,87.0,2NPG
+23516,881475,MSC,21.117,TLN,22.117,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23519,EVI23519,MSC,19.2,MBC,19.282999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23519,EVO23519,MBC,20.784000000000002,MSC,20.867,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23519,881475,MSC,21.117,TLN,22.117,False,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,67.0,2NPG
+23512,EVS21.033,TLN,21.283,TLG,21.366,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23513,EVS20.95,HYE,21.2,HYG,21.282999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23515,EVS21.95,HYE,22.2,HYG,22.282999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23516,EVS22.117,TLN,22.367,TLG,22.45,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23517,EVS21.95,MSC,22.2,MBC,22.282999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23518,EVS20.033,TLN,20.283,TLG,20.366,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23519,EVS22.117,TLN,22.367,TLG,22.45,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23520,EVS20.45,MSC,20.7,MBC,20.782999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23521,EVS19.083,TLN,19.333,TLG,19.415999999999997,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+23522,EVS20.95,MSC,21.2,MBC,21.282999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,2NPG
+23523,EVS19.333,LAC,19.583,LAG,19.665999999999997,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23524,EVS19.333,LAC,19.583,LAG,19.665999999999997,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23528,EVS19.45,HYE,19.7,HYG,19.782999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23529,EVS19.95,HYE,20.2,HYG,20.282999999999998,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,0.4,2NPG
+23530,EVS20.033,TLN,20.283,TLG,20.366,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,1.0,2NPG
+84512,EVS18.467,MSC,18.717,MBC,18.799999999999997,True,MOVE,marseille – toulon – hyeres – les – arcs – draguignan,2.0,REG
+59003,EVM5.567AVI,AVG,5.234,AVI,5.317,True,MOVE,vallee – du – rhone,2.0,R2N
+59003,886174,AVI,5.567,MAC,9.417,False,MOVE,vallee – du – rhone,298.0,R2N
+59004,EVM6.167AVI,AVG,5.834,AVI,5.917,True,MOVE,vallee – du – rhone,2.0,R2N
+59004,886176,AVI,6.167,LYD,8.667,False,MOVE,vallee – du – rhone,236.0,R2N
+59005,EVM6.567AVI,AVG,6.234,AVI,6.317,True,MOVE,vallee – du – rhone,2.0,R2N
+59005,886180,AVI,6.567,LPR,9.333,False,MOVE,vallee – du – rhone,235.0,R2N
+59006,EVM7.033AVI,AVG,6.7,AVI,6.783,True,MOVE,vallee – du – rhone,2.0,R2N
+59006,886182,AVI,7.033,LYD,9.667,False,MOVE,vallee – du – rhone,236.0,R2N
+59004,886171,LYD,9.333,AVI,11.8,False,MOVE,vallee – du – rhone,236.0,R2N
+59003,999998,MAC,10.0,LYD,10.5,True,MOVE,vallee – du – rhone,67.0,R2N
+59006,886173,LYD,10.333,AVI,12.867,False,MOVE,vallee – du – rhone,236.0,R2N
+59004,886184,AVI,12.2,LYD,14.8,False,MOVE,vallee – du – rhone,236.0,R2N
+59005,EVI59005,LPR,9.583,LYG,9.666,True,MOVE,vallee – du – rhone,3.0,R2N
+59005,EVO59005,LYG,15.299999999999999,LPR,15.383,True,MOVE,vallee – du – rhone,3.0,R2N
+59005,886183,LPR,15.633,AVI,18.45,False,MOVE,vallee – du – rhone,235.0,R2N
+59006,EVI59006,AVI,13.117,AVG,13.200000000000001,True,MOVE,vallee – du – rhone,2.0,R2N
+59006,EVO59006,AVG,15.884,AVI,15.966999999999999,True,MOVE,vallee – du – rhone,2.0,R2N
+59006,886188,AVI,16.217,LYD,18.667,False,MOVE,vallee – du – rhone,236.0,R2N
+59003,EVI59003,LYD,10.75,LYG,10.833,True,MOVE,vallee – du – rhone,1.0,R2N
+59003,EVO59003,LYG,16.0,LYD,16.083,True,MOVE,vallee – du – rhone,1.0,R2N
+59003,886187,LYD,16.333,AVI,19.083,False,MOVE,vallee – du – rhone,236.0,R2N
+84513,EVM17.117AVI,AVG,16.784000000000002,AVI,16.867,True,MOVE,vallee – du – rhone,2.0,REG
+84513,886190,AVI,17.117,LYD,19.667,False,MOVE,vallee – du – rhone,236.0,REG
+84514,EVM17.633LPR,LYG,17.3,LPR,17.383,True,MOVE,vallee – du – rhone,3.0,REG
+84514,886189,LPR,17.633,AVI,20.45,False,MOVE,vallee – du – rhone,235.0,REG
+59004,EVI59004,LYD,15.05,LYG,15.133000000000001,True,MOVE,vallee – du – rhone,1.0,R2N
+59004,EVO59004,LYG,18.0,LYD,18.083,True,MOVE,vallee – du – rhone,1.0,R2N
+59004,886191,LYD,18.333,AVI,20.867,False,MOVE,vallee – du – rhone,236.0,R2N
+59006,886195,LYD,19.333,AVI,22.15,False,MOVE,vallee – du – rhone,236.0,R2N
+59003,886192,AVI,19.35,LYD,21.667,False,MOVE,vallee – du – rhone,236.0,R2N
+59003,999999,LYD,22.0,AVG,23.5,True,MOVE,vallee – du – rhone,237.0,R2N
+59004,EVS20.867,AVI,21.117,AVG,21.2,True,MOVE,vallee – du – rhone,2.0,R2N
+59005,EVS18.45,AVI,18.7,AVG,18.782999999999998,True,MOVE,vallee – du – rhone,2.0,R2N
+59006,EVS22.15,AVI,22.4,AVG,22.482999999999997,True,MOVE,vallee – du – rhone,2.0,R2N
+84513,EVS19.667,LYD,19.917,LYG,20.0,True,MOVE,vallee – du – rhone,1.0,REG
+84514,EVS20.45,AVI,20.7,AVG,20.782999999999998,True,MOVE,vallee – du – rhone,2.0,REG
